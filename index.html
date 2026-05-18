@@ -24,7 +24,7 @@
 body{background:var(--bg);color:var(--text);font-family:'DM Sans','Segoe UI',sans-serif;font-size:14px;overflow:hidden;height:100dvh;display:flex;flex-direction:column}
 
 /* TITLEBAR */
-.titlebar{height:38px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;flex-shrink:0;user-select:none}
+.titlebar{height:56px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;flex-shrink:0;user-select:none}
 .titlebar-logo{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;letter-spacing:.05em}
 .titlebar-logo span{color:var(--accent)}
 .titlebar-icon{width:22px;height:22px;background:var(--accent);border-radius:5px;display:flex;align-items:center;justify-content:center}
@@ -439,6 +439,22 @@ textarea.form-input{resize:vertical;min-height:70px;line-height:1.5}
 .ex-modal-obs{background:var(--surface2);border-radius:12px;padding:14px;font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:16px;border-left:3px solid rgba(200,241,53,.4)}
 .ex-modal-close{width:100%;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
 .ex-modal-close:hover{background:var(--surface3)}
+/* Timer no modal */
+.ex-modal-timer{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px}
+.ex-modal-timer-display{font-size:36px;font-weight:800;font-family:'DM Mono',monospace;color:var(--accent);text-align:center;line-height:1}
+.ex-modal-timer-display.running{color:var(--yellow)}
+.ex-modal-timer-display.done{color:var(--green)}
+.ex-modal-timer-bar-wrap{height:8px;background:var(--surface3);border-radius:4px;overflow:hidden}
+.ex-modal-timer-bar{height:100%;border-radius:4px;background:var(--accent);transition:width .5s linear;width:0%}
+.ex-modal-timer-bar.running{background:var(--yellow)}
+.ex-modal-timer-bar.done{background:var(--green);width:100%!important}
+.ex-modal-timer-btns{display:flex;gap:8px}
+.ex-modal-timer-start{flex:1;padding:12px;background:rgba(200,241,53,.12);border:1px solid rgba(200,241,53,.35);border-radius:10px;color:var(--accent);font-size:14px;font-weight:700;cursor:pointer;transition:all .15s}
+.ex-modal-timer-reset{padding:12px 16px;background:var(--surface3);border:1px solid var(--border);border-radius:10px;color:var(--text3);font-size:14px;cursor:pointer;transition:all .15s}
+/* Botão marcar feito no modal */
+.ex-modal-star{width:100%;padding:15px;background:var(--surface2);border:2px solid var(--border);border-radius:12px;color:var(--text2);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px}
+.ex-modal-star.concluido{background:rgba(255,210,0,.1);border-color:rgba(255,210,0,.6);color:#ffd700}
+.ex-modal-close:hover{background:var(--surface3)}
 .aex-card{cursor:pointer}
 .aex-expand-hint{font-size:10px;color:var(--text3);opacity:.7;text-align:right;padding:2px 14px 6px;letter-spacing:.03em}
 .btn-aex-star{background:none;border:2px solid var(--border);border-radius:12px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;color:var(--text3)}
@@ -663,8 +679,8 @@ input,select,textarea{font-size:16px!important}
 .mobile-nav-btn svg{width:22px;height:22px}
 .mobile-menu-btn{
   display:flex;align-items:center;justify-content:center;
-  width:36px;height:36px;background:none;border:1px solid var(--border);
-  border-radius:8px;cursor:pointer;color:var(--text2);
+  width:44px;height:44px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;cursor:pointer;color:var(--text);
 }
 /* Login overlay safe area */
 .login-overlay{padding-top:calc(20px + var(--safe-top))}
@@ -804,7 +820,7 @@ input,select,textarea{font-size:16px!important}
 
 <!-- TITLEBAR WEB -->
 <div class="titlebar">
-  <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" style="margin-right:8px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" style="margin-right:10px"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
   <div class="titlebar-logo">
     <div class="titlebar-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></div>
     FIT<span>PRO</span>
@@ -2519,7 +2535,8 @@ function renderAlunoTreinoCard(s, destaque=false){
 
     const exDataAttr = encodeURIComponent(JSON.stringify({
       nome: e.nome, gif_url: e.gif_url||'', series: e.series||'', repeticoes: e.repeticoes||'',
-      carga: e.carga||'', descanso_seg: e.descanso_seg||0, obs: e.obs||''
+      carga: e.carga||'', descanso_seg: e.descanso_seg||0, obs: e.obs||'',
+      id: e.id||'', exId: exId
     }));
     return `<div class="aex-card${concluido?' concluido-card':''}" id="aex-card-${exId}">
       <div class="aex-expand-hint">Toque para expandir ↗</div>
@@ -4733,8 +4750,8 @@ input,select,textarea{font-size:16px!important}
 .mobile-nav-btn svg{width:22px;height:22px}
 .mobile-menu-btn{
   display:flex;align-items:center;justify-content:center;
-  width:36px;height:36px;background:none;border:1px solid var(--border);
-  border-radius:8px;cursor:pointer;color:var(--text2);
+  width:44px;height:44px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;cursor:pointer;color:var(--text);
 }
 /* Login overlay safe area */
 .login-overlay{padding-top:calc(20px + var(--safe-top))}
@@ -4780,6 +4797,18 @@ input,select,textarea{font-size:16px!important}
       <div class="ex-modal-nome" id="ex-modal-nome"></div>
       <div class="ex-modal-params" id="ex-modal-params"></div>
       <div id="ex-modal-obs"></div>
+      <!-- Timer de descanso -->
+      <div class="ex-modal-timer" id="ex-modal-timer-wrap" style="display:none;flex-direction:column;gap:10px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);text-align:center">⏱ Cronômetro de Descanso</div>
+        <div class="ex-modal-timer-display" id="ex-modal-timer-disp">00:00</div>
+        <div class="ex-modal-timer-bar-wrap"><div class="ex-modal-timer-bar" id="ex-modal-timer-bar"></div></div>
+        <div class="ex-modal-timer-btns">
+          <button class="ex-modal-timer-start" id="ex-modal-timer-start-btn">▶ Iniciar Descanso</button>
+          <button class="ex-modal-timer-reset" id="ex-modal-timer-reset-btn" title="Resetar">↺</button>
+        </div>
+      </div>
+      <!-- Marcar feito -->
+      <button class="ex-modal-star" id="ex-modal-star-btn" style="display:none">☆ Marcar como feito</button>
       <button class="ex-modal-close" onclick="fecharExModal()">✕ Fechar</button>
     </div>
   </div>
@@ -5162,8 +5191,8 @@ input,select,textarea{font-size:16px!important}
 .mobile-nav-btn svg{width:22px;height:22px}
 .mobile-menu-btn{
   display:flex;align-items:center;justify-content:center;
-  width:36px;height:36px;background:none;border:1px solid var(--border);
-  border-radius:8px;cursor:pointer;color:var(--text2);
+  width:44px;height:44px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;cursor:pointer;color:var(--text);
 }
 /* Login overlay safe area */
 .login-overlay{padding-top:calc(20px + var(--safe-top))}
@@ -5209,6 +5238,18 @@ input,select,textarea{font-size:16px!important}
       <div class="ex-modal-nome" id="ex-modal-nome"></div>
       <div class="ex-modal-params" id="ex-modal-params"></div>
       <div id="ex-modal-obs"></div>
+      <!-- Timer de descanso -->
+      <div class="ex-modal-timer" id="ex-modal-timer-wrap" style="display:none;flex-direction:column;gap:10px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);text-align:center">⏱ Cronômetro de Descanso</div>
+        <div class="ex-modal-timer-display" id="ex-modal-timer-disp">00:00</div>
+        <div class="ex-modal-timer-bar-wrap"><div class="ex-modal-timer-bar" id="ex-modal-timer-bar"></div></div>
+        <div class="ex-modal-timer-btns">
+          <button class="ex-modal-timer-start" id="ex-modal-timer-start-btn">▶ Iniciar Descanso</button>
+          <button class="ex-modal-timer-reset" id="ex-modal-timer-reset-btn" title="Resetar">↺</button>
+        </div>
+      </div>
+      <!-- Marcar feito -->
+      <button class="ex-modal-star" id="ex-modal-star-btn" style="display:none">☆ Marcar como feito</button>
       <button class="ex-modal-close" onclick="fecharExModal()">✕ Fechar</button>
     </div>
   </div>
@@ -5420,8 +5461,8 @@ input,select,textarea{font-size:16px!important}
 .mobile-nav-btn svg{width:22px;height:22px}
 .mobile-menu-btn{
   display:flex;align-items:center;justify-content:center;
-  width:36px;height:36px;background:none;border:1px solid var(--border);
-  border-radius:8px;cursor:pointer;color:var(--text2);
+  width:44px;height:44px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;cursor:pointer;color:var(--text);
 }
 /* Login overlay safe area */
 .login-overlay{padding-top:calc(20px + var(--safe-top))}
@@ -5587,6 +5628,18 @@ input,select,textarea{font-size:16px!important}
       <div class="ex-modal-nome" id="ex-modal-nome"></div>
       <div class="ex-modal-params" id="ex-modal-params"></div>
       <div id="ex-modal-obs"></div>
+      <!-- Timer de descanso -->
+      <div class="ex-modal-timer" id="ex-modal-timer-wrap" style="display:none;flex-direction:column;gap:10px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);text-align:center">⏱ Cronômetro de Descanso</div>
+        <div class="ex-modal-timer-display" id="ex-modal-timer-disp">00:00</div>
+        <div class="ex-modal-timer-bar-wrap"><div class="ex-modal-timer-bar" id="ex-modal-timer-bar"></div></div>
+        <div class="ex-modal-timer-btns">
+          <button class="ex-modal-timer-start" id="ex-modal-timer-start-btn">▶ Iniciar Descanso</button>
+          <button class="ex-modal-timer-reset" id="ex-modal-timer-reset-btn" title="Resetar">↺</button>
+        </div>
+      </div>
+      <!-- Marcar feito -->
+      <button class="ex-modal-star" id="ex-modal-star-btn" style="display:none">☆ Marcar como feito</button>
       <button class="ex-modal-close" onclick="fecharExModal()">✕ Fechar</button>
     </div>
   </div>
@@ -6397,15 +6450,19 @@ document.querySelectorAll('.nav-item').forEach(btn=>{
 tryAutoConnect();
 
 // ── Modal de exercício expandido ─────────────────────────
+let _exModalTimer=null; // {interval, remaining, total}
+
 function abrirExModal(ex){
   const bd=document.getElementById('ex-modal-backdrop');
   const imgWrap=document.getElementById('ex-modal-img-wrap');
   document.getElementById('ex-modal-nome').textContent=ex.nome||'Exercício';
 
+  // Parar timer anterior
+  if(_exModalTimer){clearInterval(_exModalTimer.interval);_exModalTimer=null;}
+
   // Imagem / gif
   if(ex.gif_url){
-    const src=ex.gif_url;
-    imgWrap.innerHTML=`<img class="ex-modal-img" src="${src}" onerror="this.parentNode.innerHTML='<div class=ex-modal-img-ph>💪</div>'">`;
+    imgWrap.innerHTML=`<img class="ex-modal-img" src="${ex.gif_url}" onerror="this.parentNode.innerHTML='<div class=ex-modal-img-ph>💪</div>'">`;
   } else {
     imgWrap.innerHTML='<div class="ex-modal-img-ph">💪</div>';
   }
@@ -6415,7 +6472,6 @@ function abrirExModal(ex){
   if(ex.series) params.push({v:ex.series,l:'Séries'});
   if(ex.repeticoes) params.push({v:ex.repeticoes,l:'Repetições'});
   if(ex.carga) params.push({v:ex.carga,l:'Carga'});
-  if(ex.descanso_seg) params.push({v:ex.descanso_seg+'s',l:'Descanso'});
   document.getElementById('ex-modal-params').innerHTML=params.map(p=>
     `<div class="ex-modal-param"><div class="ex-modal-param-val">${p.v}</div><div class="ex-modal-param-lbl">${p.l}</div></div>`
   ).join('');
@@ -6424,12 +6480,95 @@ function abrirExModal(ex){
   const obsEl=document.getElementById('ex-modal-obs');
   obsEl.innerHTML=ex.obs?`<div class="ex-modal-obs">📝 ${ex.obs}</div>`:'';
 
+  // Cronômetro de descanso
+  const timerEl=document.getElementById('ex-modal-timer-wrap');
+  if(ex.descanso_seg>0){
+    const mm=String(Math.floor(ex.descanso_seg/60)).padStart(2,'0');
+    const ss=String(ex.descanso_seg%60).padStart(2,'0');
+    timerEl.style.display='flex';
+    document.getElementById('ex-modal-timer-disp').textContent=`${mm}:${ss}`;
+    document.getElementById('ex-modal-timer-disp').className='ex-modal-timer-display';
+    document.getElementById('ex-modal-timer-bar').style.width='0%';
+    document.getElementById('ex-modal-timer-bar').className='ex-modal-timer-bar';
+    document.getElementById('ex-modal-timer-start-btn').textContent='▶ Iniciar Descanso';
+    document.getElementById('ex-modal-timer-start-btn').onclick=()=>iniciarTimerModal(ex.descanso_seg);
+    document.getElementById('ex-modal-timer-reset-btn').onclick=()=>resetTimerModal(ex.descanso_seg);
+  } else {
+    timerEl.style.display='none';
+  }
+
+  // Botão marcar feito
+  const starBtn=document.getElementById('ex-modal-star-btn');
+  if(ex.exId){
+    starBtn.style.display='flex';
+    const cardStar=document.getElementById('star-'+ex.exId);
+    const jaConcluido=cardStar&&cardStar.classList.contains('concluido');
+    _atualizarModalStar(starBtn,jaConcluido);
+    starBtn.onclick=async()=>{
+      await toggleExercicioConcluido(ex.id,ex.exId);
+      const atualizado=document.getElementById('star-'+ex.exId);
+      _atualizarModalStar(starBtn,atualizado&&atualizado.classList.contains('concluido'));
+    };
+  } else { starBtn.style.display='none'; }
+
   bd.classList.add('open');
   document.body.style.overflow='hidden';
 }
 
+function _atualizarModalStar(btn,concluido){
+  btn.className='ex-modal-star'+(concluido?' concluido':'');
+  btn.innerHTML=concluido?'⭐ Concluído':'☆ Marcar como feito';
+}
+
+function iniciarTimerModal(total){
+  if(_exModalTimer&&_exModalTimer.running){
+    // Pausar
+    clearInterval(_exModalTimer.interval);
+    _exModalTimer.running=false;
+    document.getElementById('ex-modal-timer-start-btn').textContent='▶ Continuar';
+    document.getElementById('ex-modal-timer-disp').className='ex-modal-timer-display';
+    return;
+  }
+  const disp=document.getElementById('ex-modal-timer-disp');
+  const bar=document.getElementById('ex-modal-timer-bar');
+  const btn=document.getElementById('ex-modal-timer-start-btn');
+  let remaining=_exModalTimer?_exModalTimer.remaining:total;
+  disp.className='ex-modal-timer-display running';
+  bar.className='ex-modal-timer-bar running';
+  btn.textContent='⏸ Pausar';
+  const interval=setInterval(()=>{
+    remaining--;
+    _exModalTimer.remaining=remaining;
+    const mm=String(Math.floor(remaining/60)).padStart(2,'0');
+    const ss=String(remaining%60).padStart(2,'0');
+    disp.textContent=`${mm}:${ss}`;
+    bar.style.width=`${((total-remaining)/total)*100}%`;
+    if(remaining<=0){
+      clearInterval(interval);
+      _exModalTimer=null;
+      disp.textContent='00:00';
+      disp.className='ex-modal-timer-display done';
+      bar.className='ex-modal-timer-bar done';
+      btn.textContent='✓ Concluído';
+    }
+  },1000);
+  _exModalTimer={interval,remaining,total,running:true};
+}
+
+function resetTimerModal(total){
+  if(_exModalTimer){clearInterval(_exModalTimer.interval);_exModalTimer=null;}
+  const mm=String(Math.floor(total/60)).padStart(2,'0');
+  const ss=String(total%60).padStart(2,'0');
+  document.getElementById('ex-modal-timer-disp').textContent=`${mm}:${ss}`;
+  document.getElementById('ex-modal-timer-disp').className='ex-modal-timer-display';
+  document.getElementById('ex-modal-timer-bar').style.width='0%';
+  document.getElementById('ex-modal-timer-bar').className='ex-modal-timer-bar';
+  document.getElementById('ex-modal-timer-start-btn').textContent='▶ Iniciar Descanso';
+}
+
 function fecharExModal(e){
   if(e&&e.target!==document.getElementById('ex-modal-backdrop')) return;
+  if(_exModalTimer){clearInterval(_exModalTimer.interval);_exModalTimer=null;}
   document.getElementById('ex-modal-backdrop').classList.remove('open');
   document.body.style.overflow='';
 }
@@ -6463,6 +6602,18 @@ window.addEventListener('beforeinstallprompt',e=>{
       <div class="ex-modal-nome" id="ex-modal-nome"></div>
       <div class="ex-modal-params" id="ex-modal-params"></div>
       <div id="ex-modal-obs"></div>
+      <!-- Timer de descanso -->
+      <div class="ex-modal-timer" id="ex-modal-timer-wrap" style="display:none;flex-direction:column;gap:10px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);text-align:center">⏱ Cronômetro de Descanso</div>
+        <div class="ex-modal-timer-display" id="ex-modal-timer-disp">00:00</div>
+        <div class="ex-modal-timer-bar-wrap"><div class="ex-modal-timer-bar" id="ex-modal-timer-bar"></div></div>
+        <div class="ex-modal-timer-btns">
+          <button class="ex-modal-timer-start" id="ex-modal-timer-start-btn">▶ Iniciar Descanso</button>
+          <button class="ex-modal-timer-reset" id="ex-modal-timer-reset-btn" title="Resetar">↺</button>
+        </div>
+      </div>
+      <!-- Marcar feito -->
+      <button class="ex-modal-star" id="ex-modal-star-btn" style="display:none">☆ Marcar como feito</button>
       <button class="ex-modal-close" onclick="fecharExModal()">✕ Fechar</button>
     </div>
   </div>
