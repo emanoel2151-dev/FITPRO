@@ -66,7 +66,7 @@ nav.nav{padding:10px 8px;flex:1;overflow-y:auto}
 .user-role{font-size:11px;color:var(--accent)}
 
 /* TOPBAR */
-.topbar{padding:16px 22px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.topbar{padding:16px 22px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .page-title{font-size:22px;font-weight:700;white-space:nowrap}
 .page-title span{color:var(--text3);font-size:13px;font-weight:400;margin-left:6px}
 .topbar-actions{display:flex;gap:8px;flex-shrink:0}
@@ -420,6 +420,27 @@ textarea.form-input{resize:vertical;min-height:70px;line-height:1.5}
 .aex-param-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-top:3px;white-space:nowrap}
 .aex-obs{font-size:12px;color:var(--text3);font-style:italic;padding:10px 18px 12px;border-top:1px solid var(--border);line-height:1.6;background:rgba(0,0,0,.1)}
 .aex-star-wrap{display:flex;align-items:center;justify-content:flex-end;padding:8px 14px 10px;gap:8px;border-top:1px solid var(--border);background:rgba(0,0,0,.08)}
+/* Modal de exercício expandido */
+.ex-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:900;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.ex-modal-backdrop.open{display:flex}
+@media(min-width:600px){.ex-modal-backdrop{align-items:center}}
+.ex-modal{background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:580px;max-height:92vh;overflow-y:auto;animation:slideUp .25s ease}
+@media(min-width:600px){.ex-modal{border-radius:20px;max-height:85vh}}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+.ex-modal-img{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--surface3);display:block;border-radius:24px 24px 0 0}
+@media(min-width:600px){.ex-modal-img{border-radius:20px 20px 0 0}}
+.ex-modal-img-ph{width:100%;aspect-ratio:16/9;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:80px;opacity:.3;border-radius:24px 24px 0 0}
+.ex-modal-body{padding:20px}
+.ex-modal-nome{font-size:22px;font-weight:800;color:var(--text);margin-bottom:16px;line-height:1.25}
+.ex-modal-params{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.ex-modal-param{flex:1;min-width:70px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.ex-modal-param-val{font-size:24px;font-weight:800;color:var(--accent);line-height:1}
+.ex-modal-param-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)}
+.ex-modal-obs{background:var(--surface2);border-radius:12px;padding:14px;font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:16px;border-left:3px solid rgba(200,241,53,.4)}
+.ex-modal-close{width:100%;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.ex-modal-close:hover{background:var(--surface3)}
+.aex-card{cursor:pointer}
+.aex-expand-hint{font-size:10px;color:var(--text3);opacity:.7;text-align:right;padding:2px 14px 6px;letter-spacing:.03em}
 .btn-aex-star{background:none;border:2px solid var(--border);border-radius:12px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;color:var(--text3)}
 .btn-aex-star:hover{border-color:rgba(255,210,0,.5);color:#ffd700}
 .btn-aex-star.concluido{background:rgba(255,210,0,.12);border-color:rgba(255,210,0,.6);color:#ffd700}
@@ -613,6 +634,10 @@ input,select,textarea{font-size:16px!important}
   /* Cards maiores no touch */
   .btn{min-height:40px;padding:10px 16px}
   .btn-sm{min-height:34px}
+  /* Topbar no mobile: título em cima, botão embaixo ocupando largura toda */
+  .topbar{flex-direction:column;align-items:stretch;padding:14px 16px 6px;gap:10px}
+  .page-title{font-size:22px}
+  .topbar .btn-primary{width:100%;justify-content:center;min-height:48px;font-size:15px;font-weight:700;border-radius:14px;letter-spacing:.01em}
   /* Modais fullscreen no mobile */
   .modal{width:100%!important;max-width:100%!important;border-radius:16px 16px 0 0!important;position:fixed;bottom:0;left:0;right:0;max-height:92vh;overflow-y:auto}
   .modal-backdrop{align-items:flex-end!important}
@@ -2492,8 +2517,13 @@ function renderAlunoTreinoCard(s, destaque=false){
             : `<img src="${e.gif_url}" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.opacity=0.2">`)
       : `<div class="aex-gif-ph">💪</div>`;
 
+    const exDataAttr = encodeURIComponent(JSON.stringify({
+      nome: e.nome, gif_url: e.gif_url||'', series: e.series||'', repeticoes: e.repeticoes||'',
+      carga: e.carga||'', descanso_seg: e.descanso_seg||0, obs: e.obs||''
+    }));
     return `<div class="aex-card${concluido?' concluido-card':''}" id="aex-card-${exId}">
-      <div class="aex-top">
+      <div class="aex-expand-hint">Toque para expandir ↗</div>
+      <div class="aex-top" onclick="abrirExModal(JSON.parse(decodeURIComponent('${exDataAttr}')))" style="cursor:pointer">
         <!-- IMAGEM GRANDE À ESQUERDA -->
         <div class="aex-gif-wrap">${imgHtml}</div>
 
@@ -4674,6 +4704,10 @@ input,select,textarea{font-size:16px!important}
   /* Cards maiores no touch */
   .btn{min-height:40px;padding:10px 16px}
   .btn-sm{min-height:34px}
+  /* Topbar no mobile: título em cima, botão embaixo ocupando largura toda */
+  .topbar{flex-direction:column;align-items:stretch;padding:14px 16px 6px;gap:10px}
+  .page-title{font-size:22px}
+  .topbar .btn-primary{width:100%;justify-content:center;min-height:48px;font-size:15px;font-weight:700;border-radius:14px;letter-spacing:.01em}
   /* Modais fullscreen no mobile */
   .modal{width:100%!important;max-width:100%!important;border-radius:16px 16px 0 0!important;position:fixed;bottom:0;left:0;right:0;max-height:92vh;overflow-y:auto}
   .modal-backdrop{align-items:flex-end!important}
@@ -4738,6 +4772,19 @@ input,select,textarea{font-size:16px!important}
     <span>FitPro — Sistema de Gestão Fitness</span>
   </div>
 </div>
+<!-- MODAL EXERCÍCIO EXPANDIDO -->
+<div class="ex-modal-backdrop" id="ex-modal-backdrop" onclick="fecharExModal(event)">
+  <div class="ex-modal" id="ex-modal">
+    <div id="ex-modal-img-wrap"></div>
+    <div class="ex-modal-body">
+      <div class="ex-modal-nome" id="ex-modal-nome"></div>
+      <div class="ex-modal-params" id="ex-modal-params"></div>
+      <div id="ex-modal-obs"></div>
+      <button class="ex-modal-close" onclick="fecharExModal()">✕ Fechar</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>`;
 
@@ -5086,6 +5133,10 @@ input,select,textarea{font-size:16px!important}
   /* Cards maiores no touch */
   .btn{min-height:40px;padding:10px 16px}
   .btn-sm{min-height:34px}
+  /* Topbar no mobile: título em cima, botão embaixo ocupando largura toda */
+  .topbar{flex-direction:column;align-items:stretch;padding:14px 16px 6px;gap:10px}
+  .page-title{font-size:22px}
+  .topbar .btn-primary{width:100%;justify-content:center;min-height:48px;font-size:15px;font-weight:700;border-radius:14px;letter-spacing:.01em}
   /* Modais fullscreen no mobile */
   .modal{width:100%!important;max-width:100%!important;border-radius:16px 16px 0 0!important;position:fixed;bottom:0;left:0;right:0;max-height:92vh;overflow-y:auto}
   .modal-backdrop{align-items:flex-end!important}
@@ -5150,6 +5201,19 @@ input,select,textarea{font-size:16px!important}
     <span>FitPro — Sistema de Gestão Fitness</span>
   </div>
 </div>
+<!-- MODAL EXERCÍCIO EXPANDIDO -->
+<div class="ex-modal-backdrop" id="ex-modal-backdrop" onclick="fecharExModal(event)">
+  <div class="ex-modal" id="ex-modal">
+    <div id="ex-modal-img-wrap"></div>
+    <div class="ex-modal-body">
+      <div class="ex-modal-nome" id="ex-modal-nome"></div>
+      <div class="ex-modal-params" id="ex-modal-params"></div>
+      <div id="ex-modal-obs"></div>
+      <button class="ex-modal-close" onclick="fecharExModal()">✕ Fechar</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>`;
 
@@ -5327,6 +5391,10 @@ input,select,textarea{font-size:16px!important}
   /* Cards maiores no touch */
   .btn{min-height:40px;padding:10px 16px}
   .btn-sm{min-height:34px}
+  /* Topbar no mobile: título em cima, botão embaixo ocupando largura toda */
+  .topbar{flex-direction:column;align-items:stretch;padding:14px 16px 6px;gap:10px}
+  .page-title{font-size:22px}
+  .topbar .btn-primary{width:100%;justify-content:center;min-height:48px;font-size:15px;font-weight:700;border-radius:14px;letter-spacing:.01em}
   /* Modais fullscreen no mobile */
   .modal{width:100%!important;max-width:100%!important;border-radius:16px 16px 0 0!important;position:fixed;bottom:0;left:0;right:0;max-height:92vh;overflow-y:auto}
   .modal-backdrop{align-items:flex-end!important}
@@ -5511,6 +5579,19 @@ input,select,textarea{font-size:16px!important}
   </div>
 
 </div><!-- fim .doc -->
+<!-- MODAL EXERCÍCIO EXPANDIDO -->
+<div class="ex-modal-backdrop" id="ex-modal-backdrop" onclick="fecharExModal(event)">
+  <div class="ex-modal" id="ex-modal">
+    <div id="ex-modal-img-wrap"></div>
+    <div class="ex-modal-body">
+      <div class="ex-modal-nome" id="ex-modal-nome"></div>
+      <div class="ex-modal-params" id="ex-modal-params"></div>
+      <div id="ex-modal-obs"></div>
+      <button class="ex-modal-close" onclick="fecharExModal()">✕ Fechar</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>`;
 
@@ -6315,6 +6396,44 @@ document.querySelectorAll('.nav-item').forEach(btn=>{
 });
 tryAutoConnect();
 
+// ── Modal de exercício expandido ─────────────────────────
+function abrirExModal(ex){
+  const bd=document.getElementById('ex-modal-backdrop');
+  const imgWrap=document.getElementById('ex-modal-img-wrap');
+  document.getElementById('ex-modal-nome').textContent=ex.nome||'Exercício';
+
+  // Imagem / gif
+  if(ex.gif_url){
+    const src=ex.gif_url;
+    imgWrap.innerHTML=`<img class="ex-modal-img" src="${src}" onerror="this.parentNode.innerHTML='<div class=ex-modal-img-ph>💪</div>'">`;
+  } else {
+    imgWrap.innerHTML='<div class="ex-modal-img-ph">💪</div>';
+  }
+
+  // Parâmetros
+  const params=[];
+  if(ex.series) params.push({v:ex.series,l:'Séries'});
+  if(ex.repeticoes) params.push({v:ex.repeticoes,l:'Repetições'});
+  if(ex.carga) params.push({v:ex.carga,l:'Carga'});
+  if(ex.descanso_seg) params.push({v:ex.descanso_seg+'s',l:'Descanso'});
+  document.getElementById('ex-modal-params').innerHTML=params.map(p=>
+    `<div class="ex-modal-param"><div class="ex-modal-param-val">${p.v}</div><div class="ex-modal-param-lbl">${p.l}</div></div>`
+  ).join('');
+
+  // Observação
+  const obsEl=document.getElementById('ex-modal-obs');
+  obsEl.innerHTML=ex.obs?`<div class="ex-modal-obs">📝 ${ex.obs}</div>`:'';
+
+  bd.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function fecharExModal(e){
+  if(e&&e.target!==document.getElementById('ex-modal-backdrop')) return;
+  document.getElementById('ex-modal-backdrop').classList.remove('open');
+  document.body.style.overflow='';
+}
+
 // ── PWA: Service Worker Registration ──────────────────────
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
@@ -6336,5 +6455,18 @@ window.addEventListener('beforeinstallprompt',e=>{
   if(titlebar) titlebar.parentNode.insertBefore(btn,titlebar);
 });
 </script>
+<!-- MODAL EXERCÍCIO EXPANDIDO -->
+<div class="ex-modal-backdrop" id="ex-modal-backdrop" onclick="fecharExModal(event)">
+  <div class="ex-modal" id="ex-modal">
+    <div id="ex-modal-img-wrap"></div>
+    <div class="ex-modal-body">
+      <div class="ex-modal-nome" id="ex-modal-nome"></div>
+      <div class="ex-modal-params" id="ex-modal-params"></div>
+      <div id="ex-modal-obs"></div>
+      <button class="ex-modal-close" onclick="fecharExModal()">✕ Fechar</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
