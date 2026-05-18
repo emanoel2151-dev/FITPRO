@@ -67,7 +67,7 @@ nav.nav{padding:10px 8px;flex:1;overflow-y:auto}
 
 /* TOPBAR */
 .topbar{padding:16px 22px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.page-title{font-size:22px;font-weight:700;white-space:nowrap}
+.page-title{font-size:22px;font-weight:700}
 .page-title span{color:var(--text3);font-size:13px;font-weight:400;margin-left:6px}
 .topbar-actions{display:flex;gap:8px;flex-shrink:0}
 
@@ -427,9 +427,9 @@ textarea.form-input{resize:vertical;min-height:70px;line-height:1.5}
 .ex-modal{background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:580px;max-height:92vh;overflow-y:auto;animation:slideUp .25s ease}
 @media(min-width:600px){.ex-modal{border-radius:20px;max-height:85vh}}
 @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
-.ex-modal-img{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--surface3);display:block;border-radius:24px 24px 0 0}
+.ex-modal-img{width:100%;aspect-ratio:unset;max-height:55vh;object-fit:contain;background:var(--surface3);display:block;border-radius:24px 24px 0 0}
 @media(min-width:600px){.ex-modal-img{border-radius:20px 20px 0 0}}
-.ex-modal-img-ph{width:100%;aspect-ratio:16/9;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:80px;opacity:.3;border-radius:24px 24px 0 0}
+.ex-modal-img-ph{width:100%;min-height:200px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:80px;opacity:.3;border-radius:24px 24px 0 0}
 .ex-modal-body{padding:20px}
 .ex-modal-nome{font-size:22px;font-weight:800;color:var(--text);margin-bottom:16px;line-height:1.25}
 .ex-modal-params{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
@@ -634,10 +634,10 @@ input,select,textarea{font-size:16px!important}
   /* Cards maiores no touch */
   .btn{min-height:40px;padding:10px 16px}
   .btn-sm{min-height:34px}
-  /* Topbar no mobile: título em cima, botão embaixo ocupando largura toda */
-  .topbar{flex-direction:column;align-items:stretch;padding:14px 16px 6px;gap:10px}
-  .page-title{font-size:22px}
-  .topbar .btn-primary{width:100%;justify-content:center;min-height:48px;font-size:15px;font-weight:700;border-radius:14px;letter-spacing:.01em}
+  /* Topbar no mobile */
+  .topbar{flex-direction:column!important;align-items:stretch!important;padding:14px 16px 8px!important;gap:10px!important}
+  .page-title{font-size:20px!important;white-space:normal!important}
+  .topbar .btn-primary,.topbar a.btn-primary{display:flex!important;width:100%!important;box-sizing:border-box!important;justify-content:center!important;min-height:52px!important;font-size:16px!important;font-weight:700!important;border-radius:14px!important;letter-spacing:.01em!important}
   /* Modais fullscreen no mobile */
   .modal{width:100%!important;max-width:100%!important;border-radius:16px 16px 0 0!important;position:fixed;bottom:0;left:0;right:0;max-height:92vh;overflow-y:auto}
   .modal-backdrop{align-items:flex-end!important}
@@ -4704,10 +4704,10 @@ input,select,textarea{font-size:16px!important}
   /* Cards maiores no touch */
   .btn{min-height:40px;padding:10px 16px}
   .btn-sm{min-height:34px}
-  /* Topbar no mobile: título em cima, botão embaixo ocupando largura toda */
-  .topbar{flex-direction:column;align-items:stretch;padding:14px 16px 6px;gap:10px}
-  .page-title{font-size:22px}
-  .topbar .btn-primary{width:100%;justify-content:center;min-height:48px;font-size:15px;font-weight:700;border-radius:14px;letter-spacing:.01em}
+  /* Topbar no mobile */
+  .topbar{flex-direction:column!important;align-items:stretch!important;padding:14px 16px 8px!important;gap:10px!important}
+  .page-title{font-size:20px!important;white-space:normal!important}
+  .topbar .btn-primary,.topbar a.btn-primary{display:flex!important;width:100%!important;box-sizing:border-box!important;justify-content:center!important;min-height:52px!important;font-size:16px!important;font-weight:700!important;border-radius:14px!important;letter-spacing:.01em!important}
   /* Modais fullscreen no mobile */
   .modal{width:100%!important;max-width:100%!important;border-radius:16px 16px 0 0!important;position:fixed;bottom:0;left:0;right:0;max-height:92vh;overflow-y:auto}
   .modal-backdrop{align-items:flex-end!important}
@@ -5133,10 +5133,10 @@ input,select,textarea{font-size:16px!important}
   /* Cards maiores no touch */
   .btn{min-height:40px;padding:10px 16px}
   .btn-sm{min-height:34px}
-  /* Topbar no mobile: título em cima, botão embaixo ocupando largura toda */
-  .topbar{flex-direction:column;align-items:stretch;padding:14px 16px 6px;gap:10px}
-  .page-title{font-size:22px}
-  .topbar .btn-primary{width:100%;justify-content:center;min-height:48px;font-size:15px;font-weight:700;border-radius:14px;letter-spacing:.01em}
+  /* Topbar no mobile */
+  .topbar{flex-direction:column!important;align-items:stretch!important;padding:14px 16px 8px!important;gap:10px!important}
+  .page-title{font-size:20px!important;white-space:normal!important}
+  .topbar .btn-primary,.topbar a.btn-primary{display:flex!important;width:100%!important;box-sizing:border-box!important;justify-content:center!important;min-height:52px!important;font-size:16px!important;font-weight:700!important;border-radius:14px!important;letter-spacing:.01em!important}
   /* Modais fullscreen no mobile */
   .modal{width:100%!important;max-width:100%!important;border-radius:16px 16px 0 0!important;position:fixed;bottom:0;left:0;right:0;max-height:92vh;overflow-y:auto}
   .modal-backdrop{align-items:flex-end!important}
@@ -5391,10 +5391,10 @@ input,select,textarea{font-size:16px!important}
   /* Cards maiores no touch */
   .btn{min-height:40px;padding:10px 16px}
   .btn-sm{min-height:34px}
-  /* Topbar no mobile: título em cima, botão embaixo ocupando largura toda */
-  .topbar{flex-direction:column;align-items:stretch;padding:14px 16px 6px;gap:10px}
-  .page-title{font-size:22px}
-  .topbar .btn-primary{width:100%;justify-content:center;min-height:48px;font-size:15px;font-weight:700;border-radius:14px;letter-spacing:.01em}
+  /* Topbar no mobile */
+  .topbar{flex-direction:column!important;align-items:stretch!important;padding:14px 16px 8px!important;gap:10px!important}
+  .page-title{font-size:20px!important;white-space:normal!important}
+  .topbar .btn-primary,.topbar a.btn-primary{display:flex!important;width:100%!important;box-sizing:border-box!important;justify-content:center!important;min-height:52px!important;font-size:16px!important;font-weight:700!important;border-radius:14px!important;letter-spacing:.01em!important}
   /* Modais fullscreen no mobile */
   .modal{width:100%!important;max-width:100%!important;border-radius:16px 16px 0 0!important;position:fixed;bottom:0;left:0;right:0;max-height:92vh;overflow-y:auto}
   .modal-backdrop{align-items:flex-end!important}
