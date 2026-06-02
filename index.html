@@ -363,7 +363,7 @@ textarea.form-input{resize:vertical;min-height:70px;line-height:1.5}
 /* Badge de role na titlebar */
 .personal-badge{background:rgba(200,241,53,.15);color:var(--accent);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px}
 .admin-badge{background:rgba(255,159,67,.15);color:var(--orange);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px}
-.login-err{background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.3);border-radius:8px;padding:10px 14px;font-size:12px;color:#ff6b8a;margin-top:12px;display:none}
+.login-err{background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.3);border-radius:8px;padding:10px 14px;font-size:12px;color:#ff6b8a;margin-top:12px;display:none;white-space:pre-line;line-height:1.6}
 /* Visão aluno — wrapper sobrepõe o app do personal */
 .aluno-view{display:none;flex-direction:column;min-height:100vh;position:fixed;inset:0;background:var(--bg);z-index:400;overflow-y:auto}
 .aluno-view.visible{display:flex}
@@ -1946,10 +1946,20 @@ function sbH(){
   };
 }
 
-async function sbRaw(url, opts){
+// Detectar se é erro de rede (bloqueio, sem internet, timeout)
+function _isNetworkError(e){ return e.message&&(e.message.startsWith('NETWORK:')||e.message.includes('Failed to fetch')||e.message.includes('NetworkError')||e.message.includes('network')||e.message.includes('ERR_')); }
+
+async function sbRaw(url, opts, _tentativa=0){
+  const MAX=2, DELAY=1200;
   let r;
-  try { r = await fetch(url, opts); }
-  catch(e){ throw new Error('NETWORK:'+e.message); }
+  try { r = await Promise.race([
+    fetch(url, opts),
+    new Promise((_,rej)=>setTimeout(()=>rej(new Error('NETWORK:Timeout')),12000))
+  ]); }
+  catch(e){
+    if(_tentativa<MAX){ await new Promise(res=>setTimeout(res,DELAY)); return sbRaw(url,opts,_tentativa+1); }
+    throw new Error('NETWORK:'+e.message);
+  }
   if(!r.ok){
     let body={};
     try{ body=await r.json(); }catch(_){}
@@ -1969,16 +1979,18 @@ async function sbD(table,f)     { return sbRaw(`${SB_URL}/rest/v1/${table}?${f}`
 // conexão automática — sem tela de setup
 
 async function tryAutoConnect(){
-  // Mostrar tela de login antes de qualquer coisa
   document.getElementById('login-overlay').style.display='flex';
+  const dot=document.getElementById('db-dot');
+  const txt=document.getElementById('db-status-text');
+  if(txt) txt.textContent='Conectando...';
   try{
     await sbQ('alunos','select=id&limit=1');
-    const dot=document.getElementById('db-dot');
-    const txt=document.getElementById('db-status-text');
     if(dot) dot.className='db-dot connected';
     if(txt) txt.textContent='Conectado';
   }catch(e){
-    console.error('Erro DB:',e.message);
+    console.warn('DB:',e.message);
+    if(dot){ dot.className='db-dot'; dot.style.background='var(--yellow)'; }
+    if(txt){ txt.textContent=_isNetworkError(e)?'Rede limitada':'Sem conexão'; }
   }
 }
 
@@ -2039,6 +2051,31 @@ function _entrarComoPersonal(personal){
   if(window.innerWidth <= 768) document.getElementById('mobile-bottom-nav').style.display='flex';
 }
 
+// ── Cache de sessão offline ──────────────────────────────
+const CACHE_KEY='fitpro_session_cache';
+function _salvarCacheLogin(usuario, hash, perfil, dados){
+  try{ localStorage.setItem(CACHE_KEY, JSON.stringify({usuario,hash,perfil,dados,ts:Date.now()})); }catch(_){}
+}
+function _buscarCacheLogin(usuario, hash){
+  try{
+    const raw=localStorage.getItem(CACHE_KEY);
+    if(!raw) return null;
+    const c=JSON.parse(raw);
+    // Cache válido por 30 dias
+    if(c.usuario===usuario && c.hash===hash && (Date.now()-c.ts)<30*24*3600*1000) return c;
+  }catch(_){}
+  return null;
+}
+function _limparCacheLogin(){ try{localStorage.removeItem(CACHE_KEY);}catch(_){} }
+
+// ── Mensagem amigável de erro de rede ───────────────────
+function _msgErroRede(){
+  return '⚠️ Sem conexão com o servidor.
+Isso pode acontecer em redes que bloqueiam o acesso.
+
+Se você já entrou antes neste dispositivo, tente novamente — o app tentará usar os dados salvos.';
+}
+
 async function fazerLogin(){
   const usuario = (document.getElementById('login-usuario').value||'').trim().toLowerCase();
   const senha   = (document.getElementById('login-senha').value||'').trim();
@@ -2048,25 +2085,32 @@ async function fazerLogin(){
   if(!usuario||!senha){errEl.textContent='Preencha e-mail/CPF e senha.';errEl.style.display='block';return;}
   btn.textContent='Entrando...';btn.disabled=true;
 
-  try{
-    const hash = hashSenha(senha);
+  const hash = hashSenha(senha);
+  let erroRede = false;
 
+  try{
     // 1. Tentar como ALUNO (CPF ou email)
     let loginRes = [];
-    try{ loginRes = await sbQ('aluno_logins',`usuario=eq.${encodeURIComponent(usuario)}&ativo=eq.true&select=aluno_id,senha_hash`); }catch(_){}
+    try{
+      loginRes = await sbQ('aluno_logins',`usuario=eq.${encodeURIComponent(usuario)}&ativo=eq.true&select=aluno_id,senha_hash`);
+    }catch(e){
+      if(_isNetworkError(e)) erroRede=true;
+    }
+
     if(Array.isArray(loginRes) && loginRes.length){
       const login = loginRes[0];
-      if(login.senha_hash !== hash) throw new Error('Senha incorreta.');
+      if(login.senha_hash !== hash){ errEl.textContent='Senha incorreta.'; errEl.style.display='block'; btn.textContent='Entrar'; btn.disabled=false; return; }
       const aRes = await sbQ('alunos',`id=eq.${login.aluno_id}&select=*`);
       if(!Array.isArray(aRes)||!aRes.length) throw new Error('Aluno não encontrado.');
       _sessaoAluno = aRes[0];
+      _salvarCacheLogin(usuario, hash, 'aluno', _sessaoAluno);
       await carregarDadosAluno(_sessaoAluno.id);
       document.getElementById('login-overlay').style.display='none';
       document.getElementById('login-titlebar').style.display='none';
       document.getElementById('aluno-view').classList.add('visible');
       document.getElementById('aluno-header-nome').textContent=_sessaoAluno.nome.split(' ')[0];
       document.getElementById('mobile-bottom-nav').style.display='none';
-      btn.textContent='Entrar';btn.disabled=false;
+      btn.textContent='Entrar'; btn.disabled=false;
       return;
     }
 
@@ -2075,32 +2119,56 @@ async function fazerLogin(){
       const cfg = await sbQ('personal_config','select=admin_email,admin_hash&limit=1');
       if(Array.isArray(cfg)&&cfg.length&&cfg[0].admin_email){
         if(usuario===cfg[0].admin_email.toLowerCase() && hash===cfg[0].admin_hash){
+          _salvarCacheLogin(usuario, hash, 'personal', {id:'admin',nome:'Administrador',email:usuario,role:'admin'});
           _entrarComoPersonal({id:'admin',nome:'Administrador',email:usuario,role:'admin'});
-          btn.textContent='Entrar';btn.disabled=false;
-          return;
+          btn.textContent='Entrar'; btn.disabled=false; return;
         }
       } else {
-        // Fallback: admin padrão fitpro2024! antes de rodar o SQL
         if((usuario==='admin'||usuario==='fitpro') && hash===hashSenha('fitpro2024!')){
           _entrarComoPersonal({id:'admin',nome:'Administrador',email:usuario,role:'admin'});
-          btn.textContent='Entrar';btn.disabled=false;
-          return;
+          btn.textContent='Entrar'; btn.disabled=false; return;
         }
       }
-    }catch(_){}
+    }catch(e){ if(_isNetworkError(e)) erroRede=true; }
 
     // 3. Tentar como PERSONAL cadastrado
+    let erroSenhaPersonal=false;
     try{
       const pRes = await sbQ('personal_logins',`email=eq.${encodeURIComponent(usuario)}&ativo=eq.true&select=*`);
       if(Array.isArray(pRes)&&pRes.length){
         const p=pRes[0];
-        if(p.senha_hash!==hash) throw new Error('Senha incorreta.');
+        if(p.senha_hash!==hash){ erroSenhaPersonal=true; throw new Error('Senha incorreta.'); }
+        _salvarCacheLogin(usuario, hash, 'personal', {id:p.id,nome:p.nome,email:p.email,role:'personal'});
         _entrarComoPersonal({id:p.id,nome:p.nome,email:p.email,role:'personal'});
-        btn.textContent='Entrar';btn.disabled=false;
-        return;
+        btn.textContent='Entrar'; btn.disabled=false; return;
       }
     }catch(e2){
-      if(e2.message==='Senha incorreta.') throw e2;
+      if(e2.message==='Senha incorreta.'||erroSenhaPersonal) throw e2;
+      if(_isNetworkError(e2)) erroRede=true;
+    }
+
+    // 4. MODO OFFLINE — tentar cache local se houve erro de rede
+    if(erroRede){
+      const cache=_buscarCacheLogin(usuario, hash);
+      if(cache){
+        showToast('⚡ Entrando em modo offline (dados em cache)','');
+        if(cache.perfil==='aluno'){
+          _sessaoAluno=cache.dados;
+          document.getElementById('login-overlay').style.display='none';
+          document.getElementById('login-titlebar').style.display='none';
+          document.getElementById('aluno-view').classList.add('visible');
+          document.getElementById('aluno-header-nome').textContent=(_sessaoAluno.nome||'Aluno').split(' ')[0];
+          document.getElementById('mobile-bottom-nav').style.display='none';
+        } else {
+          _entrarComoPersonal(cache.dados);
+        }
+        btn.textContent='Entrar'; btn.disabled=false; return;
+      }
+      // Cache não encontrado — mostrar mensagem de rede com dica
+      errEl.style.whiteSpace='pre-line';
+      errEl.textContent=_msgErroRede();
+      errEl.style.display='block';
+      btn.textContent='Entrar'; btn.disabled=false; return;
     }
 
     throw new Error('Usuário não encontrado ou senha incorreta.');
@@ -2108,7 +2176,7 @@ async function fazerLogin(){
     errEl.textContent=e.message||'Erro ao fazer login.';
     errEl.style.display='block';
   }
-  btn.textContent='Entrar';btn.disabled=false;
+  btn.textContent='Entrar'; btn.disabled=false;
 }
 
 async function cadastrarPersonal(){
@@ -4775,7 +4843,7 @@ input,select,textarea{font-size:16px!important}
       <h1>${tituloRel}</h1>
       <p>${lista.length} avaliação${lista.length!==1?'ões':''} selecionada${lista.length!==1?'s':''} · ${nAlunos} aluno${nAlunos!==1?'s':''}</p>
     </div>
-    <div class="doc-meta">Gerado em ${now}<br>E2A SERVIÇOS</div>
+    <div class="doc-meta">Gerado em ${now}<br>FitPro — Gestão Fitness</div>
   </div>
   <div class="summary">
     <div class="sum-card"><div class="sum-val">${lista.length}</div><div class="sum-lbl">Avaliações</div></div>
