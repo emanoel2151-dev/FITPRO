@@ -2070,10 +2070,7 @@ function _limparCacheLogin(){ try{localStorage.removeItem(CACHE_KEY);}catch(_){}
 
 // ── Mensagem amigável de erro de rede ───────────────────
 function _msgErroRede(){
-  return '⚠️ Sem conexão com o servidor.
-Isso pode acontecer em redes que bloqueiam o acesso.
-
-Se você já entrou antes neste dispositivo, tente novamente — o app tentará usar os dados salvos.';
+  return '⚠️ Sem conexão com o servidor.\nIsso pode acontecer em redes que bloqueiam o acesso.\n\nSe você já entrou antes neste dispositivo, tente novamente — o app tentará usar os dados salvos.';
 }
 
 async function fazerLogin(){
