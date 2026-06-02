@@ -384,24 +384,86 @@ textarea.form-input{resize:vertical;min-height:70px;line-height:1.5}
 .ast-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
 .ast-val{font-size:24px;font-weight:800}
 .ast-lbl{font-size:11px;color:var(--text3);margin-top:3px}
-/* ── Treino card aluno ── */
-.at-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:16px;transition:border-color .2s,box-shadow .2s}
-.at-card:hover{border-color:rgba(200,241,53,.4);box-shadow:0 4px 24px rgba(0,0,0,.3)}
-.at-card.at-agendado{border-left:4px solid var(--yellow)}
-.at-card.at-realizado{border-left:4px solid var(--green)}
-.at-header{display:flex;align-items:center;gap:14px;padding:18px 20px;cursor:pointer;user-select:none}
-.at-day-badge{display:flex;flex-direction:column;align-items:center;justify-content:center;width:48px;height:48px;border-radius:12px;background:var(--surface2);flex-shrink:0;border:1px solid var(--border)}
-.at-day-num{font-size:20px;font-weight:800;color:var(--text);line-height:1}
-.at-day-mon{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-top:1px}
-.at-info{flex:1;min-width:0}
-.at-titulo{font-size:15px;font-weight:700;color:var(--text)}
-.at-meta{font-size:12px;color:var(--text3);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.at-meta-chip{display:inline-flex;align-items:center;gap:3px;background:var(--surface2);border-radius:6px;padding:2px 7px;font-size:11px;color:var(--text3)}
-.at-chev{color:var(--text3);transition:transform .25s;flex-shrink:0}
-.at-chev.open{transform:rotate(90deg)}
+
+/* ── LAYOUT B: Grade semanal ── */
+.at-week-nav{display:flex;align-items:center;justify-content:space-between;padding:8px 0 14px;gap:8px}
+.at-week-label{font-size:13px;font-weight:700;color:var(--text);text-align:center;flex:1}
+.at-week-btn{width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .15s;flex-shrink:0}
+.at-week-btn:hover{border-color:var(--accent);color:var(--accent)}
+.at-week-bar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:20px}
+.at-day-pill{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px;border-radius:12px;border:1px solid var(--border);cursor:pointer;background:var(--surface2);transition:all .15s;user-select:none}
+.at-day-pill:hover{border-color:rgba(200,241,53,.4)}
+.at-day-pill.selected{background:rgba(200,241,53,.12);border-color:rgba(200,241,53,.6)}
+.at-day-pill.today{border-color:rgba(200,241,53,.3)}
+.at-day-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.04em;color:var(--text3);font-weight:600}
+.at-day-num{font-size:14px;font-weight:700;color:var(--text2);line-height:1.2}
+.at-day-pill.selected .at-day-lbl,.at-day-pill.selected .at-day-num{color:var(--accent)}
+.at-day-pill.today .at-day-num{color:var(--accent)}
+.at-day-dot{width:5px;height:5px;border-radius:50%;background:transparent;margin-top:1px}
+.at-day-pill.has-treino .at-day-dot{background:var(--accent)}
+.at-day-pill.has-realizado .at-day-dot{background:var(--green)}
+.at-day-pill.selected .at-day-dot{background:var(--accent)}
+
+/* Detalhe do treino selecionado */
+.at-detail-wrap{animation:fadeUp .2s ease}
+.at-detail-empty{text-align:center;padding:40px 20px;color:var(--text3)}
+.at-detail-empty-icon{font-size:42px;margin-bottom:10px}
+.at-detail-empty-txt{font-size:14px;color:var(--text2);font-weight:600;margin-bottom:4px}
+.at-detail-empty-sub{font-size:12px;color:var(--text3)}
+
+/* Card do treino no detalhe */
+.at-det-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+.at-det-top{padding:18px 20px;border-bottom:1px solid var(--border)}
+.at-det-status-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.at-det-date{font-size:12px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.at-det-titulo{font-size:18px;font-weight:800;color:var(--text);line-height:1.25;margin-bottom:10px}
+.at-det-chips{display:flex;gap:6px;flex-wrap:wrap}
+.at-det-chip{display:inline-flex;align-items:center;gap:4px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:11px;color:var(--text3)}
+.at-det-obs{margin:14px 20px 0;background:rgba(200,241,53,.06);border:1px solid rgba(200,241,53,.18);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--text2);line-height:1.6}
+.at-det-exs{padding:16px 20px}
+.at-det-ex-title{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);font-weight:700;margin-bottom:12px}
+.at-det-actions{padding:0 20px 20px;display:flex;gap:8px}
+.at-btn-confirmar{flex:1;padding:14px;background:var(--accent);color:var(--bg);border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.at-btn-confirmar:hover{background:var(--accent2)}
+.at-btn-confirmar:disabled{opacity:.5;cursor:not-allowed}
+.at-btn-feedback{padding:14px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.at-btn-feedback:hover{border-color:var(--accent);color:var(--accent)}
+.at-realizado-banner{margin:0 20px 16px;background:rgba(57,181,74,.1);border:1px solid rgba(57,181,74,.3);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px}
+.at-realizado-banner-icon{font-size:18px}
+.at-realizado-banner-txt{flex:1}
+.at-realizado-banner-txt strong{font-size:13px;color:var(--green);display:block}
+.at-realizado-banner-txt span{font-size:11px;color:var(--text3)}
+.at-stars-row{display:flex;gap:4px;margin-top:4px}
+.at-star{font-size:15px}
+
+/* Histórico compacto (lista de meses) */
+.at-hist-section{margin-top:24px}
+.at-hist-month{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:10px}
+.at-hist-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:6px;cursor:pointer;transition:all .15s}
+.at-hist-row:hover{border-color:rgba(200,241,53,.4)}
+.at-hist-date{width:38px;height:38px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.at-hist-date.r{background:rgba(57,181,74,.12);border:1px solid rgba(57,181,74,.3)}
+.at-hist-date.a{background:rgba(200,241,53,.1);border:1px solid rgba(200,241,53,.25)}
+.at-hist-date-n{font-size:14px;font-weight:800;line-height:1}
+.at-hist-date.r .at-hist-date-n{color:var(--green)}
+.at-hist-date.a .at-hist-date-n{color:var(--accent)}
+.at-hist-date-m{font-size:8px;text-transform:uppercase;letter-spacing:.05em}
+.at-hist-date.r .at-hist-date-m{color:rgba(57,181,74,.7)}
+.at-hist-date.a .at-hist-date-m{color:rgba(200,241,53,.6)}
+.at-hist-info{flex:1;min-width:0}
+.at-hist-titulo{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.at-hist-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.at-hist-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.at-hist-badge.r{background:rgba(57,181,74,.12);color:var(--green)}
+.at-hist-badge.a{background:rgba(200,241,53,.1);color:var(--accent)}
+
+/* Compatibilidade at-body (ainda usada internamente) */
 .at-body{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.4,0,.2,1)}
 .at-body.open{max-height:6000px}
 .at-body-inner{padding:0 20px 20px}
+.at-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:16px}
+.at-card.at-agendado{border-left:4px solid var(--yellow)}
+.at-card.at-realizado{border-left:4px solid var(--green)}
 /* ── Exercício card (grande) ── */
 .aex-card{background:var(--surface2);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px;display:flex;flex-direction:column;transition:border-color .15s}
 .aex-card:last-child{margin-bottom:0}
@@ -782,7 +844,18 @@ input,select,textarea{font-size:16px!important}
   <!-- Treinos -->
   <div class="aluno-page ativo" id="aluno-page-treinos">
     <div class="ast-grid" id="at-stats"></div>
-    <div id="at-lista"></div>
+    <!-- Navegação semanal -->
+    <div class="at-week-nav" id="at-week-nav" style="display:none">
+      <button class="at-week-btn" onclick="atNavSemana(-1)" title="Semana anterior">&#8249;</button>
+      <div class="at-week-label" id="at-week-label"></div>
+      <button class="at-week-btn" onclick="atNavSemana(1)" title="Próxima semana">&#8250;</button>
+    </div>
+    <!-- Grade de dias -->
+    <div class="at-week-bar" id="at-week-bar" style="display:none"></div>
+    <!-- Detalhe do dia selecionado -->
+    <div id="at-detail"></div>
+    <!-- Histórico compacto -->
+    <div id="at-hist"></div>
   </div>
 
   <!-- Avaliações -->
@@ -1947,19 +2020,15 @@ function sbH(){
 }
 
 // Detectar se é erro de rede (bloqueio, sem internet, timeout)
-function _isNetworkError(e){ return e.message&&(e.message.startsWith('NETWORK:')||e.message.includes('Failed to fetch')||e.message.includes('NetworkError')||e.message.includes('network')||e.message.includes('ERR_')); }
+function _isNetworkError(e){ return e.message&&(e.message.startsWith('NETWORK:')||e.message.includes('Failed to fetch')||e.message.includes('NetworkError')||e.message.includes('network')||e.message.includes('ERR_')||e.message.includes('Timeout')); }
 
-async function sbRaw(url, opts, _tentativa=0){
-  const MAX=2, DELAY=1200;
+async function sbRaw(url, opts){
   let r;
   try { r = await Promise.race([
     fetch(url, opts),
-    new Promise((_,rej)=>setTimeout(()=>rej(new Error('NETWORK:Timeout')),12000))
+    new Promise((_,rej)=>setTimeout(()=>rej(new Error('NETWORK:Timeout')),8000))
   ]); }
-  catch(e){
-    if(_tentativa<MAX){ await new Promise(res=>setTimeout(res,DELAY)); return sbRaw(url,opts,_tentativa+1); }
-    throw new Error('NETWORK:'+e.message);
-  }
+  catch(e){ throw new Error('NETWORK:'+e.message); }
   if(!r.ok){
     let body={};
     try{ body=await r.json(); }catch(_){}
@@ -1979,19 +2048,19 @@ async function sbD(table,f)     { return sbRaw(`${SB_URL}/rest/v1/${table}?${f}`
 // conexão automática — sem tela de setup
 
 async function tryAutoConnect(){
+  // Mostrar login imediatamente — não esperar o banco
   document.getElementById('login-overlay').style.display='flex';
   const dot=document.getElementById('db-dot');
-  const txt=document.getElementById('db-status-text');
-  if(txt) txt.textContent='Conectando...';
-  try{
-    await sbQ('alunos','select=id&limit=1');
-    if(dot) dot.className='db-dot connected';
-    if(txt) txt.textContent='Conectado';
-  }catch(e){
-    console.warn('DB:',e.message);
-    if(dot){ dot.className='db-dot'; dot.style.background='var(--yellow)'; }
-    if(txt){ txt.textContent=_isNetworkError(e)?'Rede limitada':'Sem conexão'; }
-  }
+  // Verificar conexão em background sem travar a UI
+  setTimeout(async ()=>{
+    try{
+      await sbQ('alunos','select=id&limit=1');
+      if(dot) dot.className='db-dot connected';
+    }catch(e){
+      console.warn('DB:',e.message);
+      if(dot){ dot.className='db-dot'; dot.style.background='var(--yellow)'; }
+    }
+  }, 100);
 }
 
 // ── LOGIN / ROTEAMENTO ──────────────────────────────────────────────────────
@@ -2085,11 +2154,23 @@ async function fazerLogin(){
   const hash = hashSenha(senha);
   let erroRede = false;
 
+  // Retry helper: tenta 2x com 1s de intervalo em caso de erro de rede
+  async function _sbQComRetry(tabela, query){
+    try{ return await sbQ(tabela, query); }
+    catch(e){
+      if(_isNetworkError(e)){
+        await new Promise(r=>setTimeout(r,1000));
+        return await sbQ(tabela, query); // segunda tentativa
+      }
+      throw e;
+    }
+  }
+
   try{
     // 1. Tentar como ALUNO (CPF ou email)
     let loginRes = [];
     try{
-      loginRes = await sbQ('aluno_logins',`usuario=eq.${encodeURIComponent(usuario)}&ativo=eq.true&select=aluno_id,senha_hash`);
+      loginRes = await _sbQComRetry('aluno_logins',`usuario=eq.${encodeURIComponent(usuario)}&ativo=eq.true&select=aluno_id,senha_hash`);
     }catch(e){
       if(_isNetworkError(e)) erroRede=true;
     }
@@ -2097,7 +2178,7 @@ async function fazerLogin(){
     if(Array.isArray(loginRes) && loginRes.length){
       const login = loginRes[0];
       if(login.senha_hash !== hash){ errEl.textContent='Senha incorreta.'; errEl.style.display='block'; btn.textContent='Entrar'; btn.disabled=false; return; }
-      const aRes = await sbQ('alunos',`id=eq.${login.aluno_id}&select=*`);
+      const aRes = await _sbQComRetry('alunos',`id=eq.${login.aluno_id}&select=*`);
       if(!Array.isArray(aRes)||!aRes.length) throw new Error('Aluno não encontrado.');
       _sessaoAluno = aRes[0];
       _salvarCacheLogin(usuario, hash, 'aluno', _sessaoAluno);
@@ -2113,7 +2194,7 @@ async function fazerLogin(){
 
     // 2. Tentar como ADMIN (personal_config)
     try{
-      const cfg = await sbQ('personal_config','select=admin_email,admin_hash&limit=1');
+      const cfg = await _sbQComRetry('personal_config','select=admin_email,admin_hash&limit=1');
       if(Array.isArray(cfg)&&cfg.length&&cfg[0].admin_email){
         if(usuario===cfg[0].admin_email.toLowerCase() && hash===cfg[0].admin_hash){
           _salvarCacheLogin(usuario, hash, 'personal', {id:'admin',nome:'Administrador',email:usuario,role:'admin'});
@@ -2131,7 +2212,7 @@ async function fazerLogin(){
     // 3. Tentar como PERSONAL cadastrado
     let erroSenhaPersonal=false;
     try{
-      const pRes = await sbQ('personal_logins',`email=eq.${encodeURIComponent(usuario)}&ativo=eq.true&select=*`);
+      const pRes = await _sbQComRetry('personal_logins',`email=eq.${encodeURIComponent(usuario)}&ativo=eq.true&select=*`);
       if(Array.isArray(pRes)&&pRes.length){
         const p=pRes[0];
         if(p.senha_hash!==hash){ erroSenhaPersonal=true; throw new Error('Senha incorreta.'); }
@@ -2519,51 +2600,76 @@ const _timers={}; // { exId: {interval, total, remaining, running} }
 const _cronoTreino={}; // { sessaoId: {interval, elapsed, running} }
 const pad=n=>String(n).padStart(2,'0');
 
+// ── Estado da grade semanal ─────────────────────────────
+let _atSemanaOffset=0; // 0=semana atual, -1=anterior, +1=próxima
+let _atDiaSelecionado=null; // 'YYYY-MM-DD'
+
+function _atGetInicioSemana(offset){
+  const hoje=new Date();
+  hoje.setHours(0,0,0,0);
+  const dow=hoje.getDay(); // 0=Dom
+  const seg=new Date(hoje);
+  seg.setDate(hoje.getDate()-dow+1+(offset*7)); // segunda-feira
+  return seg;
+}
+
+function _atFmtData(d){
+  return d.toISOString().slice(0,10);
+}
+
+function _atSessaoPorData(dataStr){
+  return _alunoSessoes.filter(s=>(s.data_sessao||'').slice(0,10)===dataStr);
+}
+
+function atNavSemana(dir){
+  _atSemanaOffset+=dir;
+  renderGradeSemanal();
+}
+
+function atSelecionarDia(dataStr){
+  _atDiaSelecionado=dataStr;
+  renderGradeSemanal(true); // só atualiza pills e detalhe
+}
+
 function renderAlunoTreinos(){
   const realizados=_alunoSessoes.filter(s=>s.status==='Realizado').length;
   const agendados =_alunoSessoes.filter(s=>s.status==='Agendado').length;
-  const proximos  =_alunoSessoes.filter(s=>s.status==='Agendado').slice(0,1);
   const totalEx   =_alunoSessoes.reduce((t,s)=>t+(s.exercicios||[]).length,0);
 
   document.getElementById('at-stats').innerHTML=`
-    <div class="ast-card"><div class="ast-val" style="color:var(--accent)">${_alunoSessoes.length}</div><div class="ast-lbl">Total de treinos</div></div>
+    <div class="ast-card"><div class="ast-val" style="color:var(--accent)">${_alunoSessoes.length}</div><div class="ast-lbl">Total</div></div>
     <div class="ast-card"><div class="ast-val" style="color:var(--green)">${realizados}</div><div class="ast-lbl">Realizados</div></div>
     <div class="ast-card"><div class="ast-val" style="color:var(--yellow)">${agendados}</div><div class="ast-lbl">Agendados</div></div>
     <div class="ast-card"><div class="ast-val" style="color:var(--blue)">${totalEx}</div><div class="ast-lbl">Exercícios</div></div>`;
 
   if(!_alunoSessoes.length){
-    document.getElementById('at-lista').innerHTML='<div style="text-align:center;padding:56px;color:var(--text3)"><div style="font-size:52px;margin-bottom:14px">🏋️</div><div style="font-size:16px;font-weight:600;margin-bottom:6px">Nenhum treino registrado ainda</div><div style="font-size:13px">Seu personal registrará seus treinos aqui.</div></div>';
+    document.getElementById('at-week-nav').style.display='none';
+    document.getElementById('at-week-bar').style.display='none';
+    document.getElementById('at-detail').innerHTML='<div style="text-align:center;padding:56px;color:var(--text3)"><div style="font-size:52px;margin-bottom:14px">🏋️</div><div style="font-size:16px;font-weight:600;margin-bottom:6px">Nenhum treino ainda</div><div style="font-size:13px">Seu personal registrará seus treinos aqui.</div></div>';
+    document.getElementById('at-hist').innerHTML='';
     return;
   }
 
-  // Separar: próximo agendado em destaque, depois os demais por mês
-  const agendadosList=_alunoSessoes.filter(s=>s.status==='Agendado');
-  const restante=_alunoSessoes.filter(s=>s.status!=='Agendado');
+  document.getElementById('at-week-nav').style.display='flex';
+  document.getElementById('at-week-bar').style.display='grid';
 
-  let html='';
-  if(agendadosList.length){
-    html+=`<div style="margin-bottom:24px">
-      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px">
-        <span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block"></span> Próximos Treinos
-      </div>
-      ${agendadosList.map(s=>renderAlunoTreinoCard(s,true)).join('')}
-    </div>`;
+  // Selecionar automaticamente o próximo agendado ou hoje
+  if(!_atDiaSelecionado){
+    const proximo=_alunoSessoes.find(s=>s.status==='Agendado'&&s.data_sessao);
+    if(proximo){
+      _atDiaSelecionado=proximo.data_sessao.slice(0,10);
+      // Ajustar offset para que a semana do próximo fique visível
+      const hoje=new Date(); hoje.setHours(0,0,0,0);
+      const dpx=new Date(_atDiaSelecionado+'T00:00:00');
+      const diffDias=Math.floor((dpx-hoje)/86400000);
+      _atSemanaOffset=Math.floor(diffDias/7);
+      if(diffDias<0) _atSemanaOffset=Math.floor(diffDias/7);
+    } else {
+      _atDiaSelecionado=_atFmtData(new Date());
+    }
   }
-  if(restante.length){
-    const grupos={};
-    restante.forEach(s=>{
-      const d=new Date((s.data_sessao||'')+'T00:00:00');
-      const chave=isNaN(d)?'Sem data':d.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
-      if(!grupos[chave]) grupos[chave]=[];
-      grupos[chave].push(s);
-    });
-    html+=Object.entries(grupos).map(([mes,list])=>`
-      <div style="margin-bottom:24px">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid var(--border)">${mes}</div>
-        ${list.map(s=>renderAlunoTreinoCard(s,false)).join('')}
-      </div>`).join('');
-  }
-  document.getElementById('at-lista').innerHTML=html;
+
+  renderGradeSemanal();
   // Carregar GIFs autenticados do Storage em background
   // Carregar GIFs: primeiro os dos cards abertos, depois todos
   setTimeout(()=>{
@@ -2572,6 +2678,209 @@ function renderAlunoTreinos(){
     // Todos os outros após animação
     setTimeout(_carregarGifsAluno, 600);
   }, 150);
+}
+
+function renderGradeSemanal(soDetal=false){
+  const seg=_atGetInicioSemana(_atSemanaOffset);
+  const dias=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  const hoje=_atFmtData(new Date());
+
+  // Label da semana
+  const fim=new Date(seg); fim.setDate(seg.getDate()+6);
+  const fmtD=d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  document.getElementById('at-week-label').textContent=`${fmtD(seg)} – ${fmtD(fim)}`;
+
+  // Pills dos dias
+  let barHtml='';
+  for(let i=0;i<7;i++){
+    const d=new Date(seg); d.setDate(seg.getDate()+i);
+    const ds=_atFmtData(d);
+    const sessoes=_atSessaoPorData(ds);
+    const temRealizado=sessoes.some(s=>s.status==='Realizado');
+    const temAgendado=sessoes.some(s=>s.status==='Agendado');
+    const selected=ds===_atDiaSelecionado;
+    const isHoje=ds===hoje;
+    let cls='at-day-pill';
+    if(selected) cls+=' selected';
+    if(isHoje&&!selected) cls+=' today';
+    if(temRealizado) cls+=' has-realizado';
+    else if(temAgendado) cls+=' has-treino';
+    barHtml+=`<div class="${cls}" onclick="atSelecionarDia('${ds}')">
+      <div class="at-day-lbl">${dias[i]}</div>
+      <div class="at-day-num">${d.getDate()}</div>
+      <div class="at-day-dot"></div>
+    </div>`;
+  }
+  document.getElementById('at-week-bar').innerHTML=barHtml;
+
+  // Detalhe do dia selecionado
+  const sessDia=_atDiaSelecionado?_atSessaoPorData(_atDiaSelecionado):[];
+  const detEl=document.getElementById('at-detail');
+  if(!sessDia.length){
+    const dSel=_atDiaSelecionado?new Date(_atDiaSelecionado+'T00:00:00'):new Date();
+    const nomeDia=dSel.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+    detEl.innerHTML=`<div class="at-detail-empty">
+      <div class="at-detail-empty-icon">📅</div>
+      <div class="at-detail-empty-txt">Sem treino ${_atDiaSelecionado===hoje?'hoje':'neste dia'}</div>
+      <div class="at-detail-empty-sub">${nomeDia}</div>
+    </div>`;
+  } else {
+    detEl.innerHTML=sessDia.map(s=>renderAlunoTreinoDetalhado(s)).join('');
+    setTimeout(()=>_carregarGifsNoContainer(detEl),80);
+  }
+
+  // Histórico compacto (todos os treinos fora da semana atual, agrupados por mês)
+  const inicioSem=_atFmtData(seg);
+  const fimSem=_atFmtData(fim);
+  const historico=_alunoSessoes.filter(s=>{
+    const ds=(s.data_sessao||'').slice(0,10);
+    return ds && (ds<inicioSem||ds>fimSem);
+  });
+
+  if(historico.length){
+    const grupos={};
+    historico.forEach(s=>{
+      const d=new Date((s.data_sessao||'')+'T00:00:00');
+      const chave=isNaN(d)?'Sem data':d.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+      if(!grupos[chave]) grupos[chave]=[];
+      grupos[chave].push(s);
+    });
+    const histHtml=Object.entries(grupos).map(([mes,list])=>`
+      <div class="at-hist-section">
+        <div class="at-hist-month">${mes}</div>
+        ${list.map(s=>{
+          const d=new Date((s.data_sessao||'')+'T00:00:00');
+          const dn=isNaN(d)?'?':d.getDate();
+          const dm=isNaN(d)?'':d.toLocaleDateString('pt-BR',{month:'short'}).replace('.','');
+          const isR=s.status==='Realizado';
+          const exs=Array.isArray(s.exercicios)?s.exercicios:[];
+          return `<div class="at-hist-row" onclick="atSelecionarHistorico('${s.data_sessao?s.data_sessao.slice(0,10):''}','${s.id}')">
+            <div class="at-hist-date ${isR?'r':'a'}">
+              <div class="at-hist-date-n">${dn}</div>
+              <div class="at-hist-date-m">${dm}</div>
+            </div>
+            <div class="at-hist-info">
+              <div class="at-hist-titulo">${s.titulo||'Treino'}</div>
+              <div class="at-hist-sub">${s.dia_semana||''} · ${exs.length} exercício${exs.length!==1?'s':''}</div>
+            </div>
+            <span class="at-hist-badge ${isR?'r':'a'}">${isR?'Realizado':'Agendado'}</span>
+          </div>`;
+        }).join('')}
+      </div>`).join('');
+    document.getElementById('at-hist').innerHTML=histHtml;
+  } else {
+    document.getElementById('at-hist').innerHTML='';
+  }
+}
+
+function atSelecionarHistorico(dataStr,sessaoId){
+  // Navegar até a semana daquele treino
+  if(dataStr){
+    const hoje=new Date(); hoje.setHours(0,0,0,0);
+    const d=new Date(dataStr+'T00:00:00');
+    const dow=hoje.getDay();
+    const segHoje=new Date(hoje); segHoje.setDate(hoje.getDate()-dow+1);
+    const diffMs=d-segHoje;
+    _atSemanaOffset=Math.floor(diffMs/(7*86400000));
+    _atDiaSelecionado=dataStr;
+    renderGradeSemanal();
+    // Scroll suave até o detalhe
+    setTimeout(()=>{
+      const el=document.getElementById('at-detail');
+      if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+    },100);
+  }
+}
+
+function renderAlunoTreinoDetalhado(s){
+  const exs=Array.isArray(s.exercicios)?s.exercicios:[];
+  const isReal=s.status==='Realizado';
+  const d=s.data_sessao?new Date(s.data_sessao+'T00:00:00'):null;
+  const dataFmt=d?d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'}):'';
+
+  // Banner de realizado com estrelas
+  let realizadoBanner='';
+  if(isReal){
+    const nota=s.nota_feedback||0;
+    const stars=nota?'⭐'.repeat(nota)+'☆'.repeat(5-nota):'';
+    const quando=s.realizado_em?new Date(s.realizado_em).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}):'';
+    realizadoBanner=`<div class="at-realizado-banner">
+      <div class="at-realizado-banner-icon">✅</div>
+      <div class="at-realizado-banner-txt">
+        <strong>Treino realizado${quando?' em '+quando:''}</strong>
+        ${stars?`<div class="at-stars-row">${[...stars].map(c=>`<span class="at-star">${c}</span>`).join('')}</div>`:''}
+        ${s.obs_feedback?`<span style="font-size:11px;color:var(--text3);font-style:italic">"${s.obs_feedback}"</span>`:''}
+      </div>
+    </div>`;
+  }
+
+  // Exercícios inline (sem expandir — já está expandido)
+  const exHtml=exs.length?exs.map((e,i)=>{
+    const exId=`${s.id}_${i}`;
+    const concluido=e.concluido;
+    const hasCrono=e.descanso_seg>0;
+    const exDataAttr=encodeURIComponent(JSON.stringify({
+      nome:e.nome,gif_url:e.gif_url||'',series:e.series||'',repeticoes:e.repeticoes||'',
+      carga:e.carga||'',descanso_seg:e.descanso_seg||0,obs:e.obs||'',id:e.id||'',exId
+    }));
+    const imgHtml=e.gif_url
+      ?`<img src="${e.gif_url.includes('supabase.co')?'':e.gif_url}" data-storage-url="${e.gif_url.includes('supabase.co')?e.gif_url:''}" style="width:100%;height:100%;object-fit:cover;display:${e.gif_url.includes('supabase.co')?'none':'block'}" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
+      :'';
+    const params=['series','repeticoes','carga'].filter(k=>e[k]);
+    return `<div class="aex-card${concluido?' concluido-card':''}" id="aex-card-${exId}">
+      <div class="aex-expand-hint">Toque para expandir ↗</div>
+      <div class="aex-top" onclick="abrirExModal(JSON.parse(decodeURIComponent('${exDataAttr}')))" style="cursor:pointer">
+        <div class="aex-gif-wrap">${imgHtml}<div class="aex-gif-ph" style="${imgHtml?'display:none':''}">💪</div></div>
+        <div class="aex-details">
+          <div class="aex-num-nome"><div class="aex-num">${i+1}</div><div class="aex-nome">${e.nome||'Exercício'}</div></div>
+          <div class="aex-params">${params.map(k=>`<div class="aex-param"><div class="aex-param-val">${e[k]}</div><div class="aex-param-lbl">${k==='series'?'Séries':k==='repeticoes'?'Reps':'Carga'}</div></div>`).join('')}${e.descanso_seg?`<div class="aex-param"><div class="aex-param-val">${e.descanso_seg}s</div><div class="aex-param-lbl">Descanso</div></div>`:''}</div>
+          ${e.obs?`<div class="aex-obs">📝 ${e.obs}</div>`:''}
+        </div>
+      </div>
+      ${hasCrono?`<div class="aex-timer-wrap" id="timer-wrap-${exId}">
+        <div class="aex-timer-label">⏱ Descanso: ${e.descanso_seg}s</div>
+        <div class="aex-timer-display" id="timer-disp-${exId}">${String(Math.floor(e.descanso_seg/60)).padStart(2,'0')}:${String(e.descanso_seg%60).padStart(2,'0')}</div>
+        <button class="btn-aex-timer start" id="timer-btn-${exId}" onclick="toggleExTimer('${exId}',${e.descanso_seg})">▶ Iniciar</button>
+        <button class="btn-aex-timer reset" onclick="resetExTimer('${exId}',${e.descanso_seg})" title="Resetar">↺</button>
+      </div>`:''}
+      <div class="aex-star-wrap">
+        <button class="btn-aex-star${concluido?' concluido':''}" id="star-${exId}" onclick="toggleExercicioConcluido('${e.id}','${exId}')">
+          <span class="star-icon">${concluido?'⭐':'☆'}</span> ${concluido?'Concluído':'Marcar como feito'}
+        </button>
+      </div>
+    </div>`;
+  }).join(''):'<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">Nenhum exercício cadastrado</div>';
+
+  const acoes=!isReal?`<div class="at-det-actions">
+    <button class="at-btn-confirmar" id="btn-conf-${s.id}" onclick="confirmarTreinoAluno('${s.id}')">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Marcar como realizado
+    </button>
+    <button class="at-btn-feedback" onclick="abrirFeedback('${s.id}')">💬 Feedback</button>
+  </div>`:`<div class="at-det-actions">
+    <button class="at-btn-feedback" style="width:100%" onclick="abrirFeedback('${s.id}')">💬 Feedback</button>
+  </div>`;
+
+  return `<div class="at-det-card" style="margin-bottom:16px">
+    <div class="at-det-top">
+      <div class="at-det-status-row">
+        <div class="at-det-date">${dataFmt}</div>
+        <span class="badge ${isReal?'badge-green':'badge-yellow'}" style="font-size:10px">${s.status}</span>
+      </div>
+      <div class="at-det-titulo">${s.titulo||'Treino'}</div>
+      <div class="at-det-chips">
+        ${s.dia_semana?`<span class="at-det-chip">📅 ${s.dia_semana}</span>`:''}
+        ${s.duracao_min?`<span class="at-det-chip">⏱ ${s.duracao_min} min</span>`:''}
+        <span class="at-det-chip">💪 ${exs.length} exercício${exs.length!==1?'s':''}</span>
+      </div>
+      ${s.obs?`<div class="at-det-obs">📝 ${s.obs}</div>`:''}
+    </div>
+    ${realizadoBanner?'<div style="padding:14px 20px 0">'+realizadoBanner+'</div>':''}
+    <div class="at-det-exs">
+      <div class="at-det-ex-title">Exercícios</div>
+      ${exHtml}
+    </div>
+    ${acoes}
+  </div>`;
 }
 
 function renderAlunoTreinoCard(s, destaque=false){
