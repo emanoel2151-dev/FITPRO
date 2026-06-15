@@ -370,6 +370,37 @@ textarea.form-input{resize:vertical;min-height:70px;line-height:1.5}
 .btn-inad-email:hover{background:rgba(77,148,255,.2)}
 .inad-row-dias{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(255,77,77,.15);color:var(--red);white-space:nowrap}
 .inad-empty{text-align:center;padding:24px;color:var(--green);font-size:13px;font-weight:600}
+/* Botão 1-clique notificar */
+.btn-notif-auto{display:flex;align-items:center;gap:8px;width:100%;padding:14px 18px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .2s;background:linear-gradient(135deg,rgba(37,211,102,.2),rgba(77,148,255,.15));border:1px solid rgba(37,211,102,.4);color:#fff;margin-bottom:12px}
+.btn-notif-auto:hover{background:linear-gradient(135deg,rgba(37,211,102,.3),rgba(77,148,255,.25));transform:translateY(-1px);box-shadow:0 4px 20px rgba(37,211,102,.2)}
+.btn-notif-auto:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-notif-auto-icon{font-size:20px}
+.btn-notif-auto-txt{flex:1;text-align:left}
+.btn-notif-auto-txt strong{display:block;font-size:14px}
+.btn-notif-auto-txt span{font-size:11px;opacity:.75}
+/* Modal confirmação auto-notif */
+.autonotif-modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:850;display:none;align-items:flex-end;justify-content:center;padding:0;backdrop-filter:blur(6px)}
+.autonotif-modal.open{display:flex}
+.autonotif-box{background:var(--surface);border:1px solid var(--border);border-radius:24px 24px 0 0;width:100%;max-width:520px;padding:28px 24px 36px;animation:slideUp .25s ease}
+@media(min-width:600px){.autonotif-box{border-radius:20px;margin-bottom:24px}}
+.autonotif-title{font-size:18px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.autonotif-sub{font-size:13px;color:var(--text3);margin-bottom:20px;line-height:1.6}
+.autonotif-list{display:flex;flex-direction:column;gap:6px;margin-bottom:20px;max-height:260px;overflow-y:auto}
+.autonotif-item{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px}
+.autonotif-item-nome{flex:1;font-size:13px;font-weight:600;color:var(--text)}
+.autonotif-item-info{font-size:11px;color:var(--text3)}
+.autonotif-item-canais{display:flex;gap:4px}
+.autonotif-canais-check{display:flex;gap:8px;margin-bottom:20px}
+.autonotif-canal-opt{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .15s;font-size:13px;font-weight:600}
+.autonotif-canal-opt.selected{border-color:var(--accent);background:rgba(200,241,53,.08);color:var(--accent)}
+.autonotif-canal-opt input{accent-color:var(--accent)}
+.autonotif-btns{display:flex;gap:8px}
+.autonotif-btns .btn-primary{flex:1;padding:14px;font-size:14px;font-weight:700}
+.autonotif-btns .btn-ghost{padding:14px 18px}
+/* Progress bar durante envio */
+.notif-progress{height:4px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-bottom:12px;display:none}
+.notif-progress-bar{height:100%;background:linear-gradient(90deg,#25d366,var(--accent));border-radius:4px;width:0%;transition:width .4s ease}
+.notif-progress-txt{font-size:12px;color:var(--text3);text-align:center;margin-bottom:12px;display:none}
 
 /* Modal de mensagem personalizável */
 .msg-preview{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13px;color:var(--text2);line-height:1.7;white-space:pre-wrap;min-height:80px;margin-bottom:12px}
@@ -3848,6 +3879,8 @@ async function loadCobranças(){
     cobranças=await sbQ('financeiro',filtro);
     renderFinanceiro();
     renderInadimplentes();
+    // Verificação automática 1x por dia
+    _checarAutoNotifAuto();
   }catch(e){}
 }
 
@@ -4689,6 +4722,145 @@ ${nomePersonal||'Personal Trainer'}`
   };
 }
 
+// ─────────────────────────────────────────────────────────
+// AUTO-NOTIFICAÇÃO — 1 clique ou automático ao abrir
+// ─────────────────────────────────────────────────────────
+const AUTO_NOTIF_KEY = 'fitpro_autonotif_check';
+
+// Verificar se já rodou a checagem automática hoje
+function _jaVerificouHoje(){
+  try{
+    const d = localStorage.getItem(AUTO_NOTIF_KEY);
+    return d && new Date(parseInt(d)).toDateString() === new Date().toDateString();
+  }catch(_){ return false; }
+}
+function _marcarVerificacao(){
+  try{ localStorage.setItem(AUTO_NOTIF_KEY, Date.now()); }catch(_){}
+}
+
+// Pegar inadimplentes com N+ dias de atraso não notificados hoje
+function _getParaNotificar(diasMinimos=5){
+  return _getInadimplentes().filter(i=>{
+    if(i.maiorAtraso < diasMinimos) return false;
+    if(_notifHoje(i.aluno.id)) return false; // já notificado hoje
+    return true;
+  });
+}
+
+// Abrir modal de confirmação de auto-notificação
+function abrirAutoNotif(diasMinimos=5, forcado=false){
+  const lista = _getParaNotificar(diasMinimos);
+  if(!lista.length){
+    if(forcado) showToast('✅ Nenhum aluno para notificar no momento!');
+    return;
+  }
+
+  const modal = document.getElementById('modal-autonotif');
+  const listEl = document.getElementById('autonotif-lista');
+  const subtitulo = document.getElementById('autonotif-sub');
+
+  subtitulo.textContent = `${lista.length} aluno${lista.length!==1?'s':''} com mensalidade vencida há ${diasMinimos}+ dias e ainda não notificado${lista.length!==1?'s':''} hoje.`;
+
+  listEl.innerHTML = lista.map(({aluno, totalDev, maiorAtraso})=>{
+    const temWpp = !!_fmtTelWpp(aluno.telefone);
+    const temEmail = !!aluno.email;
+    return `<div class="autonotif-item">
+      <div style="width:34px;height:34px;border-radius:8px;background:rgba(255,77,77,.12);border:1px solid rgba(255,77,77,.2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--red);flex-shrink:0">${aluno.nome.charAt(0)}</div>
+      <div class="autonotif-item-nome">${aluno.nome}</div>
+      <div class="autonotif-item-info">${maiorAtraso}d · R$ ${totalDev.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div>
+      <div class="autonotif-item-canais">
+        ${temWpp?'<span style="font-size:14px" title="Tem WhatsApp">📱</span>':'<span style="font-size:14px;opacity:.3" title="Sem telefone">📵</span>'}
+        ${temEmail?'<span style="font-size:14px" title="Tem e-mail">✉️</span>':'<span style="font-size:14px;opacity:.3" title="Sem e-mail">📭</span>'}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Resetar progresso
+  document.getElementById('notif-progress').style.display='none';
+  document.getElementById('notif-progress-bar').style.width='0%';
+  document.getElementById('notif-progress-txt').style.display='none';
+  document.getElementById('btn-disparar-notif').disabled=false;
+  document.getElementById('btn-disparar-notif').textContent='📲 Disparar mensagens';
+
+  modal.classList.add('open');
+}
+
+async function dispararNotifAuto(){
+  const wpp = document.getElementById('opt-canal-wpp').classList.contains('selected');
+  const email = document.getElementById('opt-canal-email').classList.contains('selected');
+  if(!wpp && !email){ showToast('Selecione pelo menos um canal','red'); return; }
+
+  const diasMinimos = parseInt(document.getElementById('autonotif-dias').value||'5');
+  const lista = _getParaNotificar(diasMinimos);
+  const nomePersonal = _personalLogado?.nome||'Personal';
+
+  if(!lista.length){ showToast('Nenhum aluno para notificar!'); fecharAutoNotif(); return; }
+
+  const btn = document.getElementById('btn-disparar-notif');
+  btn.disabled = true;
+
+  const progBar = document.getElementById('notif-progress');
+  const progFill = document.getElementById('notif-progress-bar');
+  const progTxt = document.getElementById('notif-progress-txt');
+  progBar.style.display='block';
+  progTxt.style.display='block';
+
+  let enviados = 0;
+  const total = lista.length;
+
+  for(let i=0; i<lista.length; i++){
+    const {aluno, totalDev, maiorAtraso} = lista[i];
+    const valorFmt = totalDev.toLocaleString('pt-BR',{minimumFractionDigits:2});
+    const nome = aluno.nome.split(' ')[0];
+
+    progTxt.textContent = `Enviando ${i+1} de ${total}: ${aluno.nome}...`;
+    progFill.style.width = `${Math.round(((i)/total)*100)}%`;
+
+    if(wpp){
+      const tel = _fmtTelWpp(aluno.telefone);
+      if(tel){
+        const msg = _msgWpp(nome, valorFmt, maiorAtraso, nomePersonal);
+        window.open(`https://wa.me/${tel}?text=${msg}`, '_blank');
+        _registrarNotif(aluno.id, 'whatsapp');
+        enviados++;
+      }
+    }
+    if(email && aluno.email){
+      const msgE = _msgEmail(nome, valorFmt, maiorAtraso, nomePersonal);
+      window.open(`mailto:${aluno.email}?subject=${msgE.subject}&body=${msgE.body}`, '_blank');
+      _registrarNotif(aluno.id, 'email');
+      enviados++;
+    }
+
+    // Pequeno delay entre cada um para não sobrecarregar o navegador
+    if(i < lista.length-1) await new Promise(r=>setTimeout(r,700));
+  }
+
+  progFill.style.width='100%';
+  progTxt.textContent=`✅ ${enviados} mensagem${enviados!==1?'s':''} disparada${enviados!==1?'s':''}!`;
+  btn.textContent='✅ Concluído!';
+
+  _marcarVerificacao();
+  setTimeout(()=>{ fecharAutoNotif(); renderInadimplentes(); },1500);
+}
+
+function fecharAutoNotif(){
+  document.getElementById('modal-autonotif').classList.remove('open');
+}
+
+function toggleCanalOpt(el){
+  el.classList.toggle('selected');
+}
+
+// Verificação automática ao carregar dados (só 1x por dia)
+function _checarAutoNotifAuto(){
+  if(_jaVerificouHoje()) return; // já verificou hoje
+  const lista = _getParaNotificar(5);
+  if(!lista.length){ _marcarVerificacao(); return; }
+  // Mostrar modal após 2s (deixar o app carregar primeiro)
+  setTimeout(()=>abrirAutoNotif(5, false), 2000);
+}
+
 function _getInadimplentes(){
   const hoje = new Date(); hoje.setHours(0,0,0,0);
   // Agrupar cobranças atrasadas/pendentes vencidas por aluno
@@ -4793,6 +4965,8 @@ function renderInadimplentes(){
         Email p/ todos (${todosEmail.length})
       </button>` : '';
 
+  const pendentesAutoNotif = lista.filter(i=>i.maiorAtraso>=5&&!_notifHoje(i.aluno.id)).length;
+
   panel.innerHTML=`<div class="inad-panel">
     <div class="inad-panel-header">
       <div class="inad-panel-title">
@@ -4802,7 +4976,6 @@ function renderInadimplentes(){
       </div>
       <div class="inad-panel-actions">
         <button class="btn-edit-msg" onclick="abrirModalTemplates()" title="Personalizar texto das mensagens">✏️ Mensagem</button>
-        ${massWppBtn}${massEmailBtn}
       </div>
     </div>
     <div class="inad-summary">
@@ -4819,6 +4992,15 @@ function renderInadimplentes(){
         <div class="inad-summary-lbl">Sem contato</div>
       </div>
     </div>
+    ${pendentesAutoNotif>0?`
+    <button class="btn-notif-auto" onclick="abrirAutoNotif(5,true)">
+      <div class="btn-notif-auto-icon">🚀</div>
+      <div class="btn-notif-auto-txt">
+        <strong>Notificar ${pendentesAutoNotif} aluno${pendentesAutoNotif!==1?'s':''} com 5+ dias de atraso</strong>
+        <span>WhatsApp + E-mail · 1 clique · ainda não notificados hoje</span>
+      </div>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>`:''}
     <div class="inad-list">${rowsHtml}</div>
   </div>`;
 }
@@ -5509,6 +5691,46 @@ input,select,textarea{font-size:16px!important}
     <span>FitPro — Sistema de Gestão Fitness</span>
   </div>
 </div>
+<!-- MODAL AUTO-NOTIFICAÇÃO -->
+<div class="autonotif-modal" id="modal-autonotif" onclick="if(event.target===this)fecharAutoNotif()">
+  <div class="autonotif-box">
+    <div class="autonotif-title">🚀 Notificação Automática</div>
+    <div class="autonotif-sub" id="autonotif-sub"></div>
+
+    <!-- Seleção de canais -->
+    <div class="autonotif-canais-check">
+      <div class="autonotif-canal-opt selected" id="opt-canal-wpp" onclick="toggleCanalOpt(this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.99.574 3.847 1.566 5.413L2 22l4.741-1.542A9.953 9.953 0 0012 22c5.522 0 10-4.477 10-10S17.522 2 12 2z"/></svg>
+        WhatsApp
+      </div>
+      <div class="autonotif-canal-opt selected" id="opt-canal-email" onclick="toggleCanalOpt(this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#4d94ff"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        E-mail
+      </div>
+    </div>
+
+    <!-- Configurar dias mínimos -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
+      <span style="font-size:13px;color:var(--text2);flex:1">Notificar alunos com mais de</span>
+      <input type="number" id="autonotif-dias" value="5" min="1" max="60"
+        style="width:56px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:6px 8px;font-size:14px;font-weight:700;text-align:center">
+      <span style="font-size:13px;color:var(--text2)">dias de atraso</span>
+    </div>
+
+    <!-- Lista de alunos que serão notificados -->
+    <div class="autonotif-list" id="autonotif-lista"></div>
+
+    <!-- Barra de progresso -->
+    <div class="notif-progress" id="notif-progress"><div class="notif-progress-bar" id="notif-progress-bar"></div></div>
+    <div class="notif-progress-txt" id="notif-progress-txt"></div>
+
+    <div class="autonotif-btns">
+      <button class="btn btn-ghost" onclick="fecharAutoNotif()">Cancelar</button>
+      <button class="btn btn-primary" id="btn-disparar-notif" onclick="dispararNotifAuto()">📲 Disparar mensagens</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL TEMPLATES DE MENSAGEM -->
 <div class="msg-template-modal" id="modal-templates" onclick="if(event.target===this)fecharModalTemplates()">
   <div class="msg-template-box">
@@ -5994,6 +6216,46 @@ input,select,textarea{font-size:16px!important}
     <span>FitPro — Sistema de Gestão Fitness</span>
   </div>
 </div>
+<!-- MODAL AUTO-NOTIFICAÇÃO -->
+<div class="autonotif-modal" id="modal-autonotif" onclick="if(event.target===this)fecharAutoNotif()">
+  <div class="autonotif-box">
+    <div class="autonotif-title">🚀 Notificação Automática</div>
+    <div class="autonotif-sub" id="autonotif-sub"></div>
+
+    <!-- Seleção de canais -->
+    <div class="autonotif-canais-check">
+      <div class="autonotif-canal-opt selected" id="opt-canal-wpp" onclick="toggleCanalOpt(this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.99.574 3.847 1.566 5.413L2 22l4.741-1.542A9.953 9.953 0 0012 22c5.522 0 10-4.477 10-10S17.522 2 12 2z"/></svg>
+        WhatsApp
+      </div>
+      <div class="autonotif-canal-opt selected" id="opt-canal-email" onclick="toggleCanalOpt(this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#4d94ff"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        E-mail
+      </div>
+    </div>
+
+    <!-- Configurar dias mínimos -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
+      <span style="font-size:13px;color:var(--text2);flex:1">Notificar alunos com mais de</span>
+      <input type="number" id="autonotif-dias" value="5" min="1" max="60"
+        style="width:56px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:6px 8px;font-size:14px;font-weight:700;text-align:center">
+      <span style="font-size:13px;color:var(--text2)">dias de atraso</span>
+    </div>
+
+    <!-- Lista de alunos que serão notificados -->
+    <div class="autonotif-list" id="autonotif-lista"></div>
+
+    <!-- Barra de progresso -->
+    <div class="notif-progress" id="notif-progress"><div class="notif-progress-bar" id="notif-progress-bar"></div></div>
+    <div class="notif-progress-txt" id="notif-progress-txt"></div>
+
+    <div class="autonotif-btns">
+      <button class="btn btn-ghost" onclick="fecharAutoNotif()">Cancelar</button>
+      <button class="btn btn-primary" id="btn-disparar-notif" onclick="dispararNotifAuto()">📲 Disparar mensagens</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL TEMPLATES DE MENSAGEM -->
 <div class="msg-template-modal" id="modal-templates" onclick="if(event.target===this)fecharModalTemplates()">
   <div class="msg-template-box">
@@ -6428,6 +6690,46 @@ input,select,textarea{font-size:16px!important}
   </div>
 
 </div><!-- fim .doc -->
+<!-- MODAL AUTO-NOTIFICAÇÃO -->
+<div class="autonotif-modal" id="modal-autonotif" onclick="if(event.target===this)fecharAutoNotif()">
+  <div class="autonotif-box">
+    <div class="autonotif-title">🚀 Notificação Automática</div>
+    <div class="autonotif-sub" id="autonotif-sub"></div>
+
+    <!-- Seleção de canais -->
+    <div class="autonotif-canais-check">
+      <div class="autonotif-canal-opt selected" id="opt-canal-wpp" onclick="toggleCanalOpt(this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.99.574 3.847 1.566 5.413L2 22l4.741-1.542A9.953 9.953 0 0012 22c5.522 0 10-4.477 10-10S17.522 2 12 2z"/></svg>
+        WhatsApp
+      </div>
+      <div class="autonotif-canal-opt selected" id="opt-canal-email" onclick="toggleCanalOpt(this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#4d94ff"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        E-mail
+      </div>
+    </div>
+
+    <!-- Configurar dias mínimos -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
+      <span style="font-size:13px;color:var(--text2);flex:1">Notificar alunos com mais de</span>
+      <input type="number" id="autonotif-dias" value="5" min="1" max="60"
+        style="width:56px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:6px 8px;font-size:14px;font-weight:700;text-align:center">
+      <span style="font-size:13px;color:var(--text2)">dias de atraso</span>
+    </div>
+
+    <!-- Lista de alunos que serão notificados -->
+    <div class="autonotif-list" id="autonotif-lista"></div>
+
+    <!-- Barra de progresso -->
+    <div class="notif-progress" id="notif-progress"><div class="notif-progress-bar" id="notif-progress-bar"></div></div>
+    <div class="notif-progress-txt" id="notif-progress-txt"></div>
+
+    <div class="autonotif-btns">
+      <button class="btn btn-ghost" onclick="fecharAutoNotif()">Cancelar</button>
+      <button class="btn btn-primary" id="btn-disparar-notif" onclick="dispararNotifAuto()">📲 Disparar mensagens</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL TEMPLATES DE MENSAGEM -->
 <div class="msg-template-modal" id="modal-templates" onclick="if(event.target===this)fecharModalTemplates()">
   <div class="msg-template-box">
@@ -7452,6 +7754,46 @@ window.addEventListener('beforeinstallprompt',e=>{
   if(titlebar) titlebar.parentNode.insertBefore(btn,titlebar);
 });
 </script>
+<!-- MODAL AUTO-NOTIFICAÇÃO -->
+<div class="autonotif-modal" id="modal-autonotif" onclick="if(event.target===this)fecharAutoNotif()">
+  <div class="autonotif-box">
+    <div class="autonotif-title">🚀 Notificação Automática</div>
+    <div class="autonotif-sub" id="autonotif-sub"></div>
+
+    <!-- Seleção de canais -->
+    <div class="autonotif-canais-check">
+      <div class="autonotif-canal-opt selected" id="opt-canal-wpp" onclick="toggleCanalOpt(this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.99.574 3.847 1.566 5.413L2 22l4.741-1.542A9.953 9.953 0 0012 22c5.522 0 10-4.477 10-10S17.522 2 12 2z"/></svg>
+        WhatsApp
+      </div>
+      <div class="autonotif-canal-opt selected" id="opt-canal-email" onclick="toggleCanalOpt(this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#4d94ff"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        E-mail
+      </div>
+    </div>
+
+    <!-- Configurar dias mínimos -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
+      <span style="font-size:13px;color:var(--text2);flex:1">Notificar alunos com mais de</span>
+      <input type="number" id="autonotif-dias" value="5" min="1" max="60"
+        style="width:56px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:6px 8px;font-size:14px;font-weight:700;text-align:center">
+      <span style="font-size:13px;color:var(--text2)">dias de atraso</span>
+    </div>
+
+    <!-- Lista de alunos que serão notificados -->
+    <div class="autonotif-list" id="autonotif-lista"></div>
+
+    <!-- Barra de progresso -->
+    <div class="notif-progress" id="notif-progress"><div class="notif-progress-bar" id="notif-progress-bar"></div></div>
+    <div class="notif-progress-txt" id="notif-progress-txt"></div>
+
+    <div class="autonotif-btns">
+      <button class="btn btn-ghost" onclick="fecharAutoNotif()">Cancelar</button>
+      <button class="btn btn-primary" id="btn-disparar-notif" onclick="dispararNotifAuto()">📲 Disparar mensagens</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL TEMPLATES DE MENSAGEM -->
 <div class="msg-template-modal" id="modal-templates" onclick="if(event.target===this)fecharModalTemplates()">
   <div class="msg-template-box">
