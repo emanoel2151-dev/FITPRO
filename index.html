@@ -321,6 +321,59 @@ textarea.form-input{resize:vertical;min-height:70px;line-height:1.5}
 /* Login titlebar logo for web */
 .login-titlebar-logo{font-size:15px;font-weight:800;letter-spacing:.02em}
 
+/* ── Painel de Inadimplentes ── */
+.inad-panel{background:rgba(255,77,77,.06);border:1px solid rgba(255,77,77,.2);border-radius:16px;padding:18px 20px;margin-bottom:22px;animation:fadeUp .2s ease}
+.inad-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.inad-panel-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;color:var(--red)}
+.inad-panel-title svg{flex-shrink:0}
+.inad-count-badge{background:var(--red);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+.inad-panel-actions{display:flex;gap:8px;flex-wrap:wrap}
+/* Sumário de notificações */
+.inad-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.inad-summary-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;text-align:center}
+.inad-summary-val{font-size:18px;font-weight:800}
+.inad-summary-lbl{font-size:10px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+/* Badge notificado */
+.inad-notif-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(200,241,53,.12);color:var(--accent);border:1px solid rgba(200,241,53,.25);white-space:nowrap}
+.inad-notif-badge.hoje{background:rgba(37,211,102,.12);color:#25d366;border-color:rgba(37,211,102,.3)}
+/* Botão editar mensagem */
+.btn-edit-msg{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;background:var(--surface2);border:1px solid var(--border);color:var(--text3);cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-edit-msg:hover{border-color:var(--accent);color:var(--accent)}
+/* Modal de mensagem personalizada */
+.msg-template-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:800;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.msg-template-modal.open{display:flex}
+.msg-template-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto}
+.msg-template-title{font-size:17px;font-weight:800;margin-bottom:6px}
+.msg-template-sub{font-size:12px;color:var(--text3);margin-bottom:18px;line-height:1.6}
+.msg-template-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.msg-template-textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:12px 14px;font-size:13px;line-height:1.7;resize:vertical;min-height:130px;font-family:inherit;margin-bottom:14px}
+.msg-template-textarea:focus{outline:none;border-color:var(--accent)}
+.msg-vars{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.msg-var-tag{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--accent);cursor:pointer;font-family:monospace;transition:all .15s}
+.msg-var-tag:hover{background:rgba(200,241,53,.1);border-color:var(--accent)}
+.msg-template-actions{display:flex;gap:8px;justify-content:flex-end}
+.btn-inad-all{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .15s}
+.btn-inad-wpp-all{background:rgba(37,211,102,.15);color:#25d366;border:1px solid rgba(37,211,102,.3)}
+.btn-inad-wpp-all:hover{background:rgba(37,211,102,.25)}
+.btn-inad-email-all{background:rgba(77,148,255,.12);color:#4d94ff;border:1px solid rgba(77,148,255,.3)}
+.btn-inad-email-all:hover{background:rgba(77,148,255,.22)}
+.inad-list{display:flex;flex-direction:column;gap:8px}
+.inad-row{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid rgba(255,77,77,.15);border-radius:12px;padding:12px 14px;flex-wrap:wrap}
+.inad-row-info{flex:1;min-width:140px}
+.inad-row-nome{font-size:13px;font-weight:700;color:var(--text)}
+.inad-row-meta{font-size:11px;color:var(--text3);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
+.inad-row-valor{font-size:14px;font-weight:800;color:var(--red);white-space:nowrap}
+.inad-row-btns{display:flex;gap:6px;flex-shrink:0}
+.btn-inad-wpp{display:inline-flex;align-items:center;gap:4px;padding:7px 11px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;border:none;background:rgba(37,211,102,.12);color:#25d366;border:1px solid rgba(37,211,102,.25);transition:all .15s;white-space:nowrap}
+.btn-inad-wpp:hover{background:rgba(37,211,102,.25)}
+.btn-inad-email{display:inline-flex;align-items:center;gap:4px;padding:7px 11px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;border:none;background:rgba(77,148,255,.1);color:#4d94ff;border:1px solid rgba(77,148,255,.25);transition:all .15s;white-space:nowrap}
+.btn-inad-email:hover{background:rgba(77,148,255,.2)}
+.inad-row-dias{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(255,77,77,.15);color:var(--red);white-space:nowrap}
+.inad-empty{text-align:center;padding:24px;color:var(--green);font-size:13px;font-weight:600}
+
+/* Modal de mensagem personalizável */
+.msg-preview{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13px;color:var(--text2);line-height:1.7;white-space:pre-wrap;min-height:80px;margin-bottom:12px}
+
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
@@ -1350,6 +1403,9 @@ input,select,textarea{font-size:16px!important}
           <div class="stat-card yellow"><div class="stat-label">Pendente</div><div class="stat-value" id="fin-pendente">—</div><div class="stat-sub" id="fin-pend-sub"></div></div>
           <div class="stat-card red"><div class="stat-label">Atrasado</div><div class="stat-value" id="fin-atrasado">—</div><div class="stat-sub" id="fin-atr-sub"></div></div>
         </div>
+
+        <!-- Painel Inadimplentes -->
+        <div id="inad-panel" style="margin-bottom:20px"></div>
 
         <!-- FILTROS -->
         <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap">
@@ -3791,6 +3847,7 @@ async function loadCobranças(){
       :`personal_id=eq.${pid}&select=*&order=vencimento.desc`;
     cobranças=await sbQ('financeiro',filtro);
     renderFinanceiro();
+    renderInadimplentes();
   }catch(e){}
 }
 
@@ -4586,6 +4643,222 @@ function clearAlunoForm(){
 }
 
 // ── FINANCEIRO (COBRANÇAS) ──────────────────────────────────
+// ── Inadimplência ────────────────────────────────────────
+
+function _fmtTelWpp(tel){
+  // Remove tudo que não é número
+  const n=(tel||'').replace(/\D/g,'');
+  // Adicionar 55 (Brasil) se não tiver DDI
+  return n.length>=10?( n.startsWith('55')?n:'55'+n ):null;
+}
+
+function _msgWpp(nomeAluno, valor, dias, nomePersonal){
+  return encodeURIComponent(
+`Olá, ${nomeAluno}! 👋
+
+Passando para avisar que identificamos uma pendência na sua mensalidade FitPro.
+
+💰 Valor em aberto: R$ ${valor}
+📅 Vencimento: há ${dias} dia${dias!==1?'s':''}
+
+Para manter seu acesso e continuar evoluindo seus treinos, regularize o mais rápido possível.
+
+Qualquer dúvida, estou à disposição! 💪
+
+— ${nomePersonal||'Personal Trainer'}`);
+}
+
+function _msgEmail(nomeAluno, valor, dias, nomePersonal){
+  return {
+    subject: encodeURIComponent(`FitPro — Mensalidade em aberto`),
+    body: encodeURIComponent(
+`Olá, ${nomeAluno}!
+
+Identificamos uma pendência na sua mensalidade FitPro.
+
+Valor em aberto: R$ ${valor}
+Vencimento: há ${dias} dia${dias!==1?'s':''}
+
+Por favor, regularize o mais rápido possível para manter seu acesso ativo.
+
+Qualquer dúvida, entre em contato.
+
+Att,
+${nomePersonal||'Personal Trainer'}`
+    )
+  };
+}
+
+function _getInadimplentes(){
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  // Agrupar cobranças atrasadas/pendentes vencidas por aluno
+  const mapa = {};
+  cobranças.forEach(c=>{
+    if(c.status==='Pago') return;
+    const vd = c.vencimento ? new Date(c.vencimento+'T00:00:00') : null;
+    if(!vd || vd >= hoje) return; // só vencidas
+    const aluno = alunos.find(a=>a.id===c.aluno_id);
+    if(!aluno || aluno.status==='Inativo') return; // só ativos
+    if(!mapa[c.aluno_id]){
+      mapa[c.aluno_id]={aluno, cobranças:[], totalDev:0, maiorAtraso:0};
+    }
+    mapa[c.aluno_id].cobranças.push(c);
+    mapa[c.aluno_id].totalDev += (+c.valor||0);
+    const dias = Math.floor((hoje-vd)/86400000);
+    if(dias > mapa[c.aluno_id].maiorAtraso) mapa[c.aluno_id].maiorAtraso=dias;
+  });
+  return Object.values(mapa).sort((a,b)=>b.maiorAtraso-a.maiorAtraso);
+}
+
+function renderInadimplentes(){
+  const panel = document.getElementById('inad-panel');
+  if(!panel) return;
+  const lista = _getInadimplentes();
+  const nomePersonal = _personalLogado?.nome || 'Personal';
+
+  if(!lista.length){
+    panel.innerHTML=`<div class="inad-panel" style="background:rgba(57,181,74,.06);border-color:rgba(57,181,74,.2)">
+      <div style="display:flex;align-items:center;gap:8px;color:var(--green);font-size:13px;font-weight:700">
+        ✅ Nenhum aluno ativo com mensalidade em atraso!
+      </div>
+    </div>`;
+    return;
+  }
+
+  const totalDev = lista.reduce((s,i)=>s+i.totalDev,0);
+
+  // Botões envio em massa
+  const todosWpp = lista.filter(i=>i.aluno.telefone);
+  const todosEmail = lista.filter(i=>i.aluno.email);
+
+  // Sumário
+  const totalDevSum   = lista.reduce((s,i)=>s+i.totalDev,0);
+  const semTelefone = lista.filter(i=>!i.aluno.telefone).length;
+  const notifHoje  = lista.filter(i=>_notifHoje(i.aluno.id)).length;
+
+  const rowsHtml = lista.map(({aluno, totalDev:tv, maiorAtraso, cobranças:cbs})=>{
+    const telWpp = _fmtTelWpp(aluno.telefone);
+    const valorFmt = tv.toLocaleString('pt-BR',{minimumFractionDigits:2});
+    const msgW = _msgWpp(aluno.nome.split(' ')[0], valorFmt, maiorAtraso, nomePersonal);
+    const msgE = _msgEmail(aluno.nome.split(' ')[0], valorFmt, maiorAtraso, nomePersonal);
+    const wppUrl = telWpp ? `https://wa.me/${telWpp}?text=${msgW}` : null;
+    const emailUrl = aluno.email ? `mailto:${aluno.email}?subject=${msgE.subject}&body=${msgE.body}` : null;
+    const ult = _ultimaNotif(aluno.id);
+    const jaHoje = _notifHoje(aluno.id);
+
+    return `<div class="inad-row" id="inad-row-${aluno.id}">
+      <div class="inad-row-info">
+        <div class="inad-row-nome" style="display:flex;align-items:center;gap:7px">
+          ${aluno.nome}
+          ${ult ? `<span class="inad-notif-badge${jaHoje?' hoje':''}">
+            ${jaHoje?'✅ Notificado hoje':'📨 Notif. '+ult.data}
+          </span>` : ''}
+        </div>
+        <div class="inad-row-meta">
+          ${aluno.telefone?`<span>📱 ${aluno.telefone}</span>`:'<span style="color:var(--red)">⚠️ Sem telefone</span>'}
+          ${aluno.email?`<span>✉️ ${aluno.email}</span>`:''}
+          <span>${cbs.length} cobrança${cbs.length!==1?'s':''} · ${maiorAtraso}d atraso</span>
+        </div>
+      </div>
+      <div class="inad-row-valor">R$ ${valorFmt}</div>
+      <div class="inad-row-btns">
+        ${wppUrl
+          ? `<a href="${wppUrl}" target="_blank" class="btn-inad-wpp" onclick="_registrarNotif('${aluno.id}','whatsapp');setTimeout(renderInadimplentes,400)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.99.574 3.847 1.566 5.413L2 22l4.741-1.542A9.953 9.953 0 0012 22c5.522 0 10-4.477 10-10S17.522 2 12 2z"/></svg>
+              WhatsApp
+            </a>`
+          : `<span class="btn-inad-wpp" style="opacity:.35;cursor:not-allowed" title="Cadastre o telefone do aluno">Sem tel.</span>`
+        }
+        ${emailUrl
+          ? `<a href="${emailUrl}" class="btn-inad-email" onclick="_registrarNotif('${aluno.id}','email');setTimeout(renderInadimplentes,400)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              Email
+            </a>`
+          : `<span class="btn-inad-email" style="opacity:.35;cursor:not-allowed" title="Cadastre o e-mail do aluno">Sem email</span>`
+        }
+      </div>
+    </div>`;
+  }).join('');
+
+  // Botões envio em massa (abre todos de uma vez via loop com timeout)
+  const massWppBtn = todosWpp.length
+    ? `<button class="btn-inad-all btn-inad-wpp-all" onclick="enviarWppMassa()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.99.574 3.847 1.566 5.413L2 22l4.741-1.542A9.953 9.953 0 0012 22c5.522 0 10-4.477 10-10S17.522 2 12 2z"/></svg>
+        WhatsApp p/ todos (${todosWpp.length})
+      </button>` : '';
+
+  const massEmailBtn = todosEmail.length
+    ? `<button class="btn-inad-all btn-inad-email-all" onclick="enviarEmailMassa()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        Email p/ todos (${todosEmail.length})
+      </button>` : '';
+
+  panel.innerHTML=`<div class="inad-panel">
+    <div class="inad-panel-header">
+      <div class="inad-panel-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Alunos com mensalidade em atraso
+        <span class="inad-count-badge">${lista.length}</span>
+      </div>
+      <div class="inad-panel-actions">
+        <button class="btn-edit-msg" onclick="abrirModalTemplates()" title="Personalizar texto das mensagens">✏️ Mensagem</button>
+        ${massWppBtn}${massEmailBtn}
+      </div>
+    </div>
+    <div class="inad-summary">
+      <div class="inad-summary-card">
+        <div class="inad-summary-val" style="color:var(--red)">R$ ${totalDevSum.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div>
+        <div class="inad-summary-lbl">Total em aberto</div>
+      </div>
+      <div class="inad-summary-card">
+        <div class="inad-summary-val" style="color:var(--green)">${notifHoje}</div>
+        <div class="inad-summary-lbl">Notif. hoje</div>
+      </div>
+      <div class="inad-summary-card">
+        <div class="inad-summary-val" style="color:var(--yellow)">${semTelefone}</div>
+        <div class="inad-summary-lbl">Sem contato</div>
+      </div>
+    </div>
+    <div class="inad-list">${rowsHtml}</div>
+  </div>`;
+}
+
+function enviarWppMassa(){
+  const lista = _getInadimplentes().filter(i=>i.aluno.telefone);
+  const nomePersonal = _personalLogado?.nome||'Personal';
+  if(!lista.length){ showToast('Nenhum devedor com telefone cadastrado','red'); return; }
+  if(!confirm(`Abrirá ${lista.length} conversa${lista.length!==1?'s':''} de WhatsApp em novas abas. Seu navegador pode bloquear pop-ups — permita se necessário.`)) return;
+  lista.forEach(({aluno, totalDev, maiorAtraso},i)=>{
+    setTimeout(()=>{
+      const tel = _fmtTelWpp(aluno.telefone);
+      if(!tel) return;
+      const valorFmt = totalDev.toLocaleString('pt-BR',{minimumFractionDigits:2});
+      const msg = _msgWpp(aluno.nome.split(' ')[0], valorFmt, maiorAtraso, nomePersonal);
+      window.open(`https://wa.me/${tel}?text=${msg}`,'_blank');
+      _registrarNotif(aluno.id,'whatsapp');
+    }, i*600);
+  });
+  showToast(`📲 Abrindo ${lista.length} conversa(s) WhatsApp...`);
+  setTimeout(renderInadimplentes, lista.length*600+400);
+}
+
+function enviarEmailMassa(){
+  const lista = _getInadimplentes().filter(i=>i.aluno.email);
+  const nomePersonal = _personalLogado?.nome||'Personal';
+  if(!lista.length){ showToast('Nenhum devedor com e-mail cadastrado','red'); return; }
+  if(!confirm(`Abrirá ${lista.length} e-mail${lista.length!==1?'s':''} em seu cliente de e-mail. Confirma?`)) return;
+  lista.forEach(({aluno, totalDev, maiorAtraso},i)=>{
+    setTimeout(()=>{
+      const valorFmt = totalDev.toLocaleString('pt-BR',{minimumFractionDigits:2});
+      const msg = _msgEmail(aluno.nome.split(' ')[0], valorFmt, maiorAtraso, nomePersonal);
+      window.open(`mailto:${aluno.email}?subject=${msg.subject}&body=${msg.body}`,'_blank');
+      _registrarNotif(aluno.id,'email');
+    }, i*600);
+  });
+  showToast(`✉️ Abrindo ${lista.length} e-mail(s)...`);
+  setTimeout(renderInadimplentes, lista.length*600+400);
+}
+
 function renderFinanceiro(){
   const total=cobranças.reduce((s,c)=>s+(+c.valor||0),0);
   const rec=cobranças.filter(c=>c.status==='Pago').reduce((s,c)=>s+(+c.valor||0),0);
@@ -4613,6 +4886,14 @@ function renderFinanceiro(){
     const ai=alunos.findIndex(a=>a.id===c.aluno_id);
     const vd=c.vencimento?new Date(c.vencimento+'T00:00:00'):null;
     const atrasada=vd&&vd<hoje&&c.status!=='Pago';
+    // Botões de cobrança rápida na tabela
+    const alunoObj=alunos.find(a=>a.id===c.aluno_id);
+    const telWpp=alunoObj?_fmtTelWpp(alunoObj.telefone):null;
+    const nomePersonal=_personalLogado?.nome||'Personal';
+    const diasAtraso=atrasada&&vd?Math.floor((hoje-vd)/86400000):0;
+    const valorFmt=(+c.valor||0).toLocaleString('pt-BR',{minimumFractionDigits:2});
+    const wppBtn=atrasada&&telWpp?`<a href="https://wa.me/${telWpp}?text=${_msgWpp((alunoObj?.nome||c.aluno_nome).split(' ')[0],valorFmt,diasAtraso,nomePersonal)}" target="_blank" class="btn btn-ghost btn-sm" style="color:#25d366" title="WhatsApp">💬</a>`:'';
+    const emailBtn=atrasada&&alunoObj?.email?`<a href="mailto:${alunoObj.email}?subject=${_msgEmail((alunoObj?.nome||c.aluno_nome).split(' ')[0],valorFmt,diasAtraso,nomePersonal).subject}&body=${_msgEmail((alunoObj?.nome||c.aluno_nome).split(' ')[0],valorFmt,diasAtraso,nomePersonal).body}" class="btn btn-ghost btn-sm" style="color:#4d94ff" title="Email">📧</a>`:'';
     return`<tr>
       <td><div class="td-name"><div class="avatar-sm" style="${gc(ai<0?i:ai)}">${ini(c.aluno_nome)}</div><strong>${c.aluno_nome}</strong></div></td>
       <td style="color:var(--text)">${c.descricao||'—'}</td>
@@ -4623,11 +4904,14 @@ function renderFinanceiro(){
       <td style="color:var(--text3);font-size:12px">${c.data_pgto?fdt(c.data_pgto):'—'}</td>
       <td onclick="event.stopPropagation()"><div style="display:flex;gap:3px;flex-wrap:wrap">
         ${c.status!=='Pago'?`<button class="btn btn-ghost btn-sm" onclick="registrarPagamento('${c.id}')" style="color:var(--green)">✓ Pago</button>`:''}
+        ${wppBtn}${emailBtn}
         <button class="btn btn-ghost btn-sm" onclick="jogarProxMes('${c.id}')" title="Gerar cobrança para próximo período">📅</button>
         <button class="btn btn-ghost btn-sm" onclick="editarCobranca('${c.id}')">✏️</button>
         <button class="btn btn-danger btn-sm" onclick="excluirCobranca('${c.id}')">🗑</button>
       </div></td>
     </tr>`}).join('');
+  // Atualizar painel de inadimplentes junto
+  renderInadimplentes();
 }
 
 async function registrarPagamento(id){
@@ -5225,6 +5509,50 @@ input,select,textarea{font-size:16px!important}
     <span>FitPro — Sistema de Gestão Fitness</span>
   </div>
 </div>
+<!-- MODAL TEMPLATES DE MENSAGEM -->
+<div class="msg-template-modal" id="modal-templates" onclick="if(event.target===this)fecharModalTemplates()">
+  <div class="msg-template-box">
+    <div class="msg-template-title">✏️ Personalizar Mensagens</div>
+    <div class="msg-template-sub">Use as variáveis abaixo para personalizar o texto. Clique numa variável para inserir na posição do cursor.</div>
+    <div class="msg-vars">
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{nome}')">{nome}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{valor}')">{valor}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{dias}')">{dias}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{personal}')">{personal}</span>
+    </div>
+
+    <div class="msg-template-label">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.99.574 3.847 1.566 5.413L2 22l4.741-1.542A9.953 9.953 0 0012 22c5.522 0 10-4.477 10-10S17.522 2 12 2z"/></svg>
+      Mensagem WhatsApp
+    </div>
+    <div class="msg-vars" style="margin-bottom:6px">
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{nome}')">{nome}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{valor}')">{valor}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{dias}')">{dias}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{personal}')">{personal}</span>
+    </div>
+    <textarea class="msg-template-textarea" id="tpl-wpp-textarea" placeholder="Digite o template do WhatsApp..."></textarea>
+
+    <div class="msg-template-label">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:#4d94ff"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      Mensagem E-mail
+    </div>
+    <div class="msg-vars" style="margin-bottom:6px">
+      <span class="msg-var-tag" onclick="inserirVar('tpl-email-textarea','{nome}')">{nome}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-email-textarea','{valor}')">{valor}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-email-textarea','{dias}')">{dias}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-email-textarea','{personal}')">{personal}</span>
+    </div>
+    <textarea class="msg-template-textarea" id="tpl-email-textarea" placeholder="Digite o template do e-mail..."></textarea>
+
+    <div class="msg-template-actions">
+      <button class="btn btn-ghost" onclick="restaurarTemplates()">↺ Restaurar padrão</button>
+      <button class="btn btn-ghost" onclick="fecharModalTemplates()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarTemplates()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL EXERCÍCIO EXPANDIDO -->
 <div class="ex-modal-backdrop" id="ex-modal-backdrop" onclick="fecharExModal(event)">
   <div class="ex-modal" id="ex-modal">
@@ -5666,6 +5994,50 @@ input,select,textarea{font-size:16px!important}
     <span>FitPro — Sistema de Gestão Fitness</span>
   </div>
 </div>
+<!-- MODAL TEMPLATES DE MENSAGEM -->
+<div class="msg-template-modal" id="modal-templates" onclick="if(event.target===this)fecharModalTemplates()">
+  <div class="msg-template-box">
+    <div class="msg-template-title">✏️ Personalizar Mensagens</div>
+    <div class="msg-template-sub">Use as variáveis abaixo para personalizar o texto. Clique numa variável para inserir na posição do cursor.</div>
+    <div class="msg-vars">
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{nome}')">{nome}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{valor}')">{valor}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{dias}')">{dias}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{personal}')">{personal}</span>
+    </div>
+
+    <div class="msg-template-label">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.99.574 3.847 1.566 5.413L2 22l4.741-1.542A9.953 9.953 0 0012 22c5.522 0 10-4.477 10-10S17.522 2 12 2z"/></svg>
+      Mensagem WhatsApp
+    </div>
+    <div class="msg-vars" style="margin-bottom:6px">
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{nome}')">{nome}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{valor}')">{valor}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{dias}')">{dias}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{personal}')">{personal}</span>
+    </div>
+    <textarea class="msg-template-textarea" id="tpl-wpp-textarea" placeholder="Digite o template do WhatsApp..."></textarea>
+
+    <div class="msg-template-label">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:#4d94ff"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      Mensagem E-mail
+    </div>
+    <div class="msg-vars" style="margin-bottom:6px">
+      <span class="msg-var-tag" onclick="inserirVar('tpl-email-textarea','{nome}')">{nome}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-email-textarea','{valor}')">{valor}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-email-textarea','{dias}')">{dias}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-email-textarea','{personal}')">{personal}</span>
+    </div>
+    <textarea class="msg-template-textarea" id="tpl-email-textarea" placeholder="Digite o template do e-mail..."></textarea>
+
+    <div class="msg-template-actions">
+      <button class="btn btn-ghost" onclick="restaurarTemplates()">↺ Restaurar padrão</button>
+      <button class="btn btn-ghost" onclick="fecharModalTemplates()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarTemplates()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL EXERCÍCIO EXPANDIDO -->
 <div class="ex-modal-backdrop" id="ex-modal-backdrop" onclick="fecharExModal(event)">
   <div class="ex-modal" id="ex-modal">
@@ -6056,6 +6428,50 @@ input,select,textarea{font-size:16px!important}
   </div>
 
 </div><!-- fim .doc -->
+<!-- MODAL TEMPLATES DE MENSAGEM -->
+<div class="msg-template-modal" id="modal-templates" onclick="if(event.target===this)fecharModalTemplates()">
+  <div class="msg-template-box">
+    <div class="msg-template-title">✏️ Personalizar Mensagens</div>
+    <div class="msg-template-sub">Use as variáveis abaixo para personalizar o texto. Clique numa variável para inserir na posição do cursor.</div>
+    <div class="msg-vars">
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{nome}')">{nome}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{valor}')">{valor}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{dias}')">{dias}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{personal}')">{personal}</span>
+    </div>
+
+    <div class="msg-template-label">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.99.574 3.847 1.566 5.413L2 22l4.741-1.542A9.953 9.953 0 0012 22c5.522 0 10-4.477 10-10S17.522 2 12 2z"/></svg>
+      Mensagem WhatsApp
+    </div>
+    <div class="msg-vars" style="margin-bottom:6px">
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{nome}')">{nome}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{valor}')">{valor}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{dias}')">{dias}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{personal}')">{personal}</span>
+    </div>
+    <textarea class="msg-template-textarea" id="tpl-wpp-textarea" placeholder="Digite o template do WhatsApp..."></textarea>
+
+    <div class="msg-template-label">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:#4d94ff"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      Mensagem E-mail
+    </div>
+    <div class="msg-vars" style="margin-bottom:6px">
+      <span class="msg-var-tag" onclick="inserirVar('tpl-email-textarea','{nome}')">{nome}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-email-textarea','{valor}')">{valor}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-email-textarea','{dias}')">{dias}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-email-textarea','{personal}')">{personal}</span>
+    </div>
+    <textarea class="msg-template-textarea" id="tpl-email-textarea" placeholder="Digite o template do e-mail..."></textarea>
+
+    <div class="msg-template-actions">
+      <button class="btn btn-ghost" onclick="restaurarTemplates()">↺ Restaurar padrão</button>
+      <button class="btn btn-ghost" onclick="fecharModalTemplates()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarTemplates()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL EXERCÍCIO EXPANDIDO -->
 <div class="ex-modal-backdrop" id="ex-modal-backdrop" onclick="fecharExModal(event)">
   <div class="ex-modal" id="ex-modal">
@@ -6883,6 +7299,12 @@ document.querySelectorAll('.nav-item').forEach(btn=>{
     if(window.innerWidth<=768) closeMobileSidebar();
   });
 });
+// Garantir templates padrão salvos se não existirem
+(function(){ try{
+  if(!localStorage.getItem(_TPL_KEY_WPP)) _setTplWpp(_TPL_WPP_DEFAULT);
+  if(!localStorage.getItem(_TPL_KEY_EMAIL)) _setTplEmail(_TPL_EMAIL_DEFAULT);
+}catch(_){} })();
+
 tryAutoConnect();
 
 // ── Modal de exercício expandido ─────────────────────────
@@ -7030,6 +7452,50 @@ window.addEventListener('beforeinstallprompt',e=>{
   if(titlebar) titlebar.parentNode.insertBefore(btn,titlebar);
 });
 </script>
+<!-- MODAL TEMPLATES DE MENSAGEM -->
+<div class="msg-template-modal" id="modal-templates" onclick="if(event.target===this)fecharModalTemplates()">
+  <div class="msg-template-box">
+    <div class="msg-template-title">✏️ Personalizar Mensagens</div>
+    <div class="msg-template-sub">Use as variáveis abaixo para personalizar o texto. Clique numa variável para inserir na posição do cursor.</div>
+    <div class="msg-vars">
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{nome}')">{nome}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{valor}')">{valor}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{dias}')">{dias}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{personal}')">{personal}</span>
+    </div>
+
+    <div class="msg-template-label">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.99.574 3.847 1.566 5.413L2 22l4.741-1.542A9.953 9.953 0 0012 22c5.522 0 10-4.477 10-10S17.522 2 12 2z"/></svg>
+      Mensagem WhatsApp
+    </div>
+    <div class="msg-vars" style="margin-bottom:6px">
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{nome}')">{nome}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{valor}')">{valor}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{dias}')">{dias}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-wpp-textarea','{personal}')">{personal}</span>
+    </div>
+    <textarea class="msg-template-textarea" id="tpl-wpp-textarea" placeholder="Digite o template do WhatsApp..."></textarea>
+
+    <div class="msg-template-label">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:#4d94ff"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      Mensagem E-mail
+    </div>
+    <div class="msg-vars" style="margin-bottom:6px">
+      <span class="msg-var-tag" onclick="inserirVar('tpl-email-textarea','{nome}')">{nome}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-email-textarea','{valor}')">{valor}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-email-textarea','{dias}')">{dias}</span>
+      <span class="msg-var-tag" onclick="inserirVar('tpl-email-textarea','{personal}')">{personal}</span>
+    </div>
+    <textarea class="msg-template-textarea" id="tpl-email-textarea" placeholder="Digite o template do e-mail..."></textarea>
+
+    <div class="msg-template-actions">
+      <button class="btn btn-ghost" onclick="restaurarTemplates()">↺ Restaurar padrão</button>
+      <button class="btn btn-ghost" onclick="fecharModalTemplates()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarTemplates()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL EXERCÍCIO EXPANDIDO -->
 <div class="ex-modal-backdrop" id="ex-modal-backdrop" onclick="fecharExModal(event)">
   <div class="ex-modal" id="ex-modal">
