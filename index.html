@@ -2579,12 +2579,62 @@ function setAlunoPage(id, btn){
   if(btn) btn.classList.add('ativo');
 }
 
+// ── Cache de dados do aluno ─────────────────────────────
+const CACHE_DADOS_KEY='fitpro_aluno_dados';
+function _salvarCacheDados(alunoId, sessoes, avaliacoes, cobrancas){
+  try{
+    localStorage.setItem(CACHE_DADOS_KEY+'_'+alunoId, JSON.stringify({
+      sessoes, avaliacoes, cobrancas, ts: Date.now()
+    }));
+  }catch(_){}
+}
+function _carregarCacheDados(alunoId){
+  try{
+    const raw=localStorage.getItem(CACHE_DADOS_KEY+'_'+alunoId);
+    if(!raw) return null;
+    const c=JSON.parse(raw);
+    // Cache válido por 7 dias
+    if((Date.now()-c.ts)<7*24*3600*1000) return c;
+  }catch(_){}
+  return null;
+}
+
 async function carregarDadosAluno(alunoId){
-  const [sRes,avRes,coRes] = await Promise.all([
-    sbQ('sessoes',`aluno_id=eq.${alunoId}&select=*,exercicios(*)&order=data_sessao.desc`),
-    sbQ('avaliacoes',`aluno_id=eq.${alunoId}&select=*&order=created_at.desc`),
-    sbQ('financeiro',`aluno_id=eq.${alunoId}&select=*&order=vencimento.desc`)
-  ]);
+  let sRes, avRes, coRes;
+  let usouCache = false;
+
+  try{
+    [sRes, avRes, coRes] = await Promise.all([
+      sbQ('sessoes',`aluno_id=eq.${alunoId}&select=*,exercicios(*)&order=data_sessao.desc`),
+      sbQ('avaliacoes',`aluno_id=eq.${alunoId}&select=*&order=created_at.desc`),
+      sbQ('financeiro',`aluno_id=eq.${alunoId}&select=*&order=vencimento.desc`)
+    ]);
+    // Salvar no cache para uso offline
+    _salvarCacheDados(alunoId,
+      Array.isArray(sRes)?sRes:[],
+      Array.isArray(avRes)?avRes:[],
+      Array.isArray(coRes)?coRes:[]
+    );
+  } catch(e){
+    // Erro de rede — tentar cache
+    if(_isNetworkError(e)){
+      const cache = _carregarCacheDados(alunoId);
+      if(cache){
+        sRes  = cache.sessoes;
+        avRes = cache.avaliacoes;
+        coRes = cache.cobrancas;
+        usouCache = true;
+        showToast('📦 Exibindo dados salvos (modo offline)','');
+      } else {
+        // Sem cache — mostrar aviso mas não travar
+        sRes=[]; avRes=[]; coRes=[];
+        showToast('⚠️ Sem conexão e sem dados em cache','red');
+      }
+    } else {
+      sRes=[]; avRes=[]; coRes=[];
+    }
+  }
+
   _alunoSessoes   = Array.isArray(sRes)?sRes:[];
   _alunoAvaliacoes= Array.isArray(avRes)?avRes:[];
   _alunoCobrancas = Array.isArray(coRes)?coRes:[];
@@ -2592,6 +2642,18 @@ async function carregarDadosAluno(alunoId){
   renderAlunoAvaliacoes();
   renderAlunoFinanceiro();
   renderAlunoDados();
+
+  // Indicador visual offline discreto
+  if(usouCache){
+    const header=document.querySelector('.aluno-header');
+    if(header&&!header.querySelector('.offline-badge')){
+      const b=document.createElement('span');
+      b.className='offline-badge';
+      b.textContent='📦 offline';
+      b.style.cssText='font-size:10px;background:rgba(255,200,0,.15);border:1px solid rgba(255,200,0,.3);color:#ffd700;border-radius:6px;padding:2px 8px;margin-left:8px';
+      header.appendChild(b);
+    }
+  }
 }
 
 // ─── TREINOS ───
