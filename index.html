@@ -2092,8 +2092,6 @@ input,select,textarea{font-size:16px!important}
 
 <script>
 // Web App — sem Electron
-function ipc(ch,d){ return Promise.resolve(); }
-
 // ── SUPABASE FETCH ─────────────────────────────────────────
 const SB_URL='https://joitcinjtxdovyzjvtdx.supabase.co', SB_KEY='sb_publishable_BnvUJxnX98XB71C8_81x7Q_asn4C0RT';
 
@@ -2324,6 +2322,7 @@ async function fazerLogin(){
           document.getElementById('aluno-view').classList.add('visible');
           document.getElementById('aluno-header-nome').textContent=(_sessaoAluno.nome||'Aluno').split(' ')[0];
           document.getElementById('mobile-bottom-nav').style.display='none';
+          await carregarDadosAluno(_sessaoAluno.id);
         } else {
           _entrarComoPersonal(cache.dados);
         }
@@ -2407,12 +2406,6 @@ async function cadastrarPersonal(){
     errEl.style.display='block';
   }
   btn.textContent='Criar minha conta';btn.disabled=false;
-}
-
-function loginPersonal(){
-  // Personal entrou — esconder tela de login e carregar dados
-  loadAllData();
-  document.getElementById('login-overlay').style.display='none';
 }
 
 function sairPersonal(){
@@ -3032,164 +3025,6 @@ function renderAlunoTreinoDetalhado(s){
   </div>`;
 }
 
-function renderAlunoTreinoCard(s, destaque=false){
-  const exs=(s.exercicios||[]).slice().sort((a,b)=>a.ordem-b.ordem);
-  const stCl=s.status==='Realizado'?'badge-green':s.status==='Agendado'?'badge-yellow':'badge-gray';
-  const cardClass=s.status==='Agendado'?'at-agendado':s.status==='Realizado'?'at-realizado':'';
-
-  // Badge data
-  const d=new Date((s.data_sessao||'')+'T00:00:00');
-  const diaNum=isNaN(d)?'—':d.getDate();
-  const diaAbr=isNaN(d)?'':d.toLocaleDateString('pt-BR',{month:'short'}).replace('.','');
-
-  // Exercícios (cards grandes)
-  const exHtml = exs.length ? exs.map(e=>{
-    const exId=`${s.id}_${e.id||e.ordem}`;
-    const hasCrono = e.descanso_seg>0;
-    const concluido = !!e.concluido;
-    // Imagem: base64, storage ou URL externa
-    const imgHtml = e.gif_url
-      ? (e.gif_url.startsWith('data:')
-          ? `<img src="${e.gif_url}" style="width:100%;height:100%;object-fit:cover;display:block">`
-          : e.gif_url.includes('supabase.co')
-            ? `<img src="" data-storage-url="${e.gif_url}" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.opacity=0.2">`
-            : `<img src="${e.gif_url}" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.opacity=0.2">`)
-      : `<div class="aex-gif-ph">💪</div>`;
-
-    const exDataAttr = encodeURIComponent(JSON.stringify({
-      nome: e.nome, gif_url: e.gif_url||'', series: e.series||'', repeticoes: e.repeticoes||'',
-      carga: e.carga||'', descanso_seg: e.descanso_seg||0, obs: e.obs||'',
-      id: e.id||'', exId: exId
-    }));
-    return `<div class="aex-card${concluido?' concluido-card':''}" id="aex-card-${exId}">
-      <div class="aex-expand-hint">Toque para expandir ↗</div>
-      <div class="aex-top" onclick="abrirExModal(JSON.parse(decodeURIComponent('${exDataAttr}')))" style="cursor:pointer">
-        <!-- IMAGEM GRANDE À ESQUERDA -->
-        <div class="aex-gif-wrap">${imgHtml}</div>
-
-        <!-- INFORMAÇÕES À DIREITA -->
-        <div class="aex-details">
-          <!-- Número + nome -->
-          <div class="aex-num-nome">
-            <div class="aex-num">${e.ordem||''}</div>
-            <div class="aex-nome">${e.nome}</div>
-          </div>
-
-          <!-- Parâmetros em cards -->
-          <div class="aex-params">
-            ${e.series?`<div class="aex-param">
-              <div class="aex-param-val">${e.series}</div>
-              <div class="aex-param-lbl">Séries</div>
-            </div>`:''}
-            ${e.repeticoes?`<div class="aex-param">
-              <div class="aex-param-val" style="${e.repeticoes.length>4?'font-size:13px':''}">${e.repeticoes}</div>
-              <div class="aex-param-lbl">Reps</div>
-            </div>`:''}
-            ${e.carga?`<div class="aex-param">
-              <div class="aex-param-val" style="font-size:${e.carga.length>4?'12':'15'}px">${e.carga}</div>
-              <div class="aex-param-lbl">Carga</div>
-            </div>`:''}
-            ${e.descanso_seg?`<div class="aex-param">
-              <div class="aex-param-val">${e.descanso_seg}s</div>
-              <div class="aex-param-lbl">Descanso</div>
-            </div>`:''}
-          </div>
-        </div>
-      </div>
-      ${e.obs?`<div class="aex-obs">📝 ${e.obs}</div>`:''}
-      ${hasCrono?`
-      <div class="aex-timer-wrap" id="timer-wrap-${exId}">
-        <div>
-          <div class="aex-timer-display" id="timer-disp-${exId}">${pad(Math.floor(e.descanso_seg/60))}:${pad(e.descanso_seg%60)}</div>
-          <div style="font-size:10px;color:var(--text3);margin-top:2px" id="timer-lbl-${exId}">descanso configurado</div>
-        </div>
-        <div style="flex:1">
-          <div class="aex-timer-bar-wrap"><div class="aex-timer-bar" id="timer-bar-${exId}"></div></div>
-        </div>
-        <button class="btn-aex-timer start" id="timer-btn-${exId}" onclick="toggleExTimer('${exId}',${e.descanso_seg})">▶ Iniciar</button>
-        <button class="btn-aex-timer reset" onclick="resetExTimer('${exId}',${e.descanso_seg})" title="Resetar">↺</button>
-      </div>`:''}
-      <div class="aex-star-wrap">
-        <button class="btn-aex-star${concluido?' concluido':''}" id="star-${exId}" onclick="toggleExercicioConcluido('${e.id}','${exId}')">
-          <span class="star-icon">${concluido?'⭐':'☆'}</span>
-          ${concluido?'Concluído':'Marcar como feito'}
-        </button>
-      </div>
-    </div>`;
-  }).join('')
-  : `<div style="color:var(--text3);font-size:13px;padding:14px 0;text-align:center">Exercícios não cadastrados ainda.</div>`;
-
-  // Cronômetro geral do treino
-  const cronoId=`crono-${s.id}`;
-  const cronoHtml=`
-    <div class="at-crono">
-      <div>
-        <div class="at-crono-display" id="${cronoId}-display">00:00</div>
-        <div class="at-crono-label" id="${cronoId}-lbl">Cronômetro do treino${s.duracao_min?' · meta: '+s.duracao_min+' min':''}</div>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn-crono iniciar" id="${cronoId}-btn" onclick="toggleCronoTreino('${s.id}')">▶ Iniciar</button>
-        <button class="btn-crono resetar" onclick="resetCronoTreino('${s.id}')">↺ Resetar</button>
-      </div>
-    </div>`;
-
-  // Banner de realizado + feedback existente
-  const notaStars = s.nota_aluno
-    ? [1,2,3,4,5].map(n=>`<span style="font-size:16px;${n<=s.nota_aluno?'':'filter:grayscale(1);opacity:.3'}">⭐</span>`).join('')
-    : '';
-  const realizadoBanner = s.status==='Realizado' ? `
-    <div class="at-realizado-banner">
-      <span style="font-size:20px">✅</span>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:12px;font-weight:700;color:var(--green)">Treino realizado${s.realizado_em?' em '+new Date(s.realizado_em).toLocaleDateString('pt-BR'):''}!</div>
-        ${s.nota_aluno?`<div style="display:flex;gap:2px;margin-top:2px">${notaStars}</div>`:''}
-        ${s.feedback_aluno?`<div style="font-size:12px;color:var(--text3);margin-top:4px;font-style:italic">"${s.feedback_aluno}"</div>`:''}
-      </div>
-      <button class="btn-feedback-treino" style="font-size:12px;padding:7px 13px" onclick="abrirFeedback('${s.id}')">
-        ${s.feedback_aluno?'✏️ Editar':'💬 Feedback'}
-      </button>
-    </div>` : '';
-
-  // Rodapé de ações (só para não-realizados)
-  const acoesFooter = s.status!=='Realizado' ? `
-    <div class="at-actions">
-      <button class="btn-confirmar-treino" id="btn-conf-${s.id}" onclick="confirmarTreinoAluno('${s.id}')">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-        Marcar como realizado
-      </button>
-      <button class="btn-feedback-treino" onclick="abrirFeedback('${s.id}')">
-        💬 Feedback
-      </button>
-    </div>` : '';
-
-  return `<div class="at-card ${cardClass}" id="atcard-${s.id}">
-    <div class="at-header" onclick="toggleAtCard('atb-${s.id}','atc-${s.id}')">
-      <div class="at-day-badge">
-        <div class="at-day-num">${diaNum}</div>
-        <div class="at-day-mon">${diaAbr}</div>
-      </div>
-      <div class="at-info">
-        <div class="at-titulo">${s.titulo}</div>
-        <div class="at-meta">
-          ${s.dia_semana?`<span class="at-meta-chip">📅 ${s.dia_semana}</span>`:''}
-          ${s.duracao_min?`<span class="at-meta-chip">⏱ ${s.duracao_min} min</span>`:''}
-          <span class="at-meta-chip">💪 ${exs.length} exercício${exs.length!==1?'s':''}</span>
-          <span class="badge ${stCl}" style="font-size:10px">${s.status}</span>
-        </div>
-      </div>
-      <svg class="at-chev" id="atc-${s.id}" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-    </div>
-    <div class="at-body" id="atb-${s.id}">
-      <div class="at-body-inner">
-        ${s.obs?`<div style="background:rgba(200,241,53,.06);border:1px solid rgba(200,241,53,.18);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">📝 ${s.obs}</div>`:''}
-        ${cronoHtml}
-        <div style="margin-bottom:4px">${exHtml}</div>
-      </div>
-    </div>
-    ${realizadoBanner}
-    ${acoesFooter}
-  </div>`;
-}
 
 // Carregar GIFs do Storage na visão do aluno (via blob autenticado)
 async function _carregarGifsNoContainer(container){
@@ -4608,14 +4443,6 @@ function gerarSenhaAleatoria(){
   return s;
 }
 
-function gerarUsuarioDoAluno(){
-  const nome = document.getElementById('f-nome').value.trim();
-  if(!nome) return '';
-  // pegar primeiro e último nome, minúsculo, sem acentos, + número aleatório 2 dígitos
-  const partes = nome.toLowerCase().normalize('NFD').replace(/[^a-z\s]/g,'').trim().split(/\s+/);
-  const base = partes.length>1 ? partes[0]+'.'+partes[partes.length-1] : partes[0];
-  return base + String(Math.floor(10+Math.random()*90));
-}
 
 function gerarLoginAluno(){
   // Usuário = CPF (só números) OU email — prioridade: CPF, depois email
@@ -5343,13 +5170,6 @@ function _atualizarBarraSelecao(){
 function gerarPDFSelecionadas(){
   if(!_avSelecionadas.size){showToast('Selecione ao menos uma avaliação','error');return;}
   const lista=avaliacoes.filter(av=>_avSelecionadas.has(av.id));
-  _gerarPDFRelatorio(lista);
-}
-
-function gerarPDFTodasAvaliacoes(){
-  const filtroAluno=document.getElementById('av-filtro-aluno')?.value||'';
-  const lista=filtroAluno?avaliacoes.filter(a=>a.aluno_id===filtroAluno):avaliacoes;
-  if(!lista.length){showToast('Nenhuma avaliação para exportar','error');return;}
   _gerarPDFRelatorio(lista);
 }
 
@@ -7043,36 +6863,6 @@ async function salvarBibliotecaTreino(){
   btn.disabled=false;btn.textContent='Salvar Treino';
 }
 
-function abrirDetalheBibliotecaTreino(id){
-  const t=bibliotecaTreinos.find(x=>x.id===id); if(!t) return;
-  const exs=(t.treinos_biblioteca_exercicios||[]).sort((a,b)=>a.ordem-b.ordem);
-  document.getElementById('btreino-detalhe-content').innerHTML=`
-    <div style="margin-bottom:16px">
-      <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px">${t.nome}</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
-        ${t.nivel?`<span class="badge ${t.nivel==='Iniciante'?'badge-green':t.nivel==='Avançado'?'badge-red':'badge-yellow'}">${t.nivel}</span>`:''}
-        ${t.duracao_min?`<span class="badge badge-gray">⏱ ${t.duracao_min} min</span>`:''}
-        <span class="badge badge-gray">💪 ${exs.length} exercício${exs.length!==1?'s':''}</span>
-      </div>
-      ${t.descricao?`<div style="font-size:13px;color:var(--text2);background:var(--surface2);border-radius:8px;padding:10px 14px">${t.descricao}</div>`:''}
-    </div>
-    <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px">Exercícios</div>
-    ${exs.map((e,i)=>`
-      <div class="ex-detalhe">
-        <div class="ex-detalhe-nome"><span style="width:22px;height:22px;border-radius:50%;background:rgba(200,241,53,.12);color:var(--accent);font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</span>${e.nome}</div>
-        <div class="ex-detalhe-grid">
-          <div class="ex-detalhe-stat"><div class="ex-detalhe-val">${e.series||'—'}</div><div class="ex-detalhe-label">Séries</div></div>
-          <div class="ex-detalhe-stat"><div class="ex-detalhe-val">${e.repeticoes||'—'}</div><div class="ex-detalhe-label">Reps</div></div>
-          <div class="ex-detalhe-stat"><div class="ex-detalhe-val">${e.carga||'—'}</div><div class="ex-detalhe-label">Carga</div></div>
-          <div class="ex-detalhe-stat"><div class="ex-detalhe-val">${e.descanso_seg?e.descanso_seg+'s':'—'}</div><div class="ex-detalhe-label">Descanso</div></div>
-        </div>
-      </div>`).join('')}`;
-  document.getElementById('btn-del-btreino').onclick=()=>excluirBibliotecaTreino(id);
-  document.getElementById('btn-edit-btreino').onclick=()=>{closeModal('modal-btreino-detalhe');editarBibliotecaTreino(id);};
-  document.getElementById('btn-aplicar-btreino').onclick=()=>{closeModal('modal-btreino-detalhe');abrirAplicarTreino(id);};
-  openModal('modal-btreino-detalhe');
-}
-
 function editarBibliotecaTreino(id){
   const t=bibliotecaTreinos.find(x=>x.id===id); if(!t) return;
   document.getElementById('btreino-edit-id').value=t.id;
@@ -7161,14 +6951,6 @@ async function previewBtreinoGif(n){
   }
   // URL externa
   preview.innerHTML='<img src="'+url+'" style="width:100%;height:100%;object-fit:cover" onerror="this.style.opacity=0.3">';
-}
-
-function excluirBibliotecaTreinoModal(){
-  const btn=document.getElementById('btn-del-btreino-modal');
-  if(!btn) return;
-  const id=btn.dataset.id;
-  if(!id) return;
-  excluirBibliotecaTreino(id, true);
 }
 
 async function excluirBibliotecaTreino(id){
@@ -7457,13 +7239,6 @@ function selecionarStorageItem(idx, el){
   document.getElementById('btn-usar-imagem').disabled=!_storageSelectedUrl;
 }
 
-function selecionarStorage(url, el){
-  _storageSelectedUrl=url;
-  document.querySelectorAll('.storage-item.selected').forEach(e=>e.classList.remove('selected'));
-  el.classList.add('selected');
-  document.getElementById('btn-usar-imagem').disabled=false;
-}
-
 function filtrarStorage(){
   const bucket=document.getElementById('storage-bucket-sel')?.value||'exercicios';
   const prefix=_storagePath?_storagePath+'/':'';
@@ -7576,12 +7351,6 @@ function _criarModalFeedback(){
 document.getElementById('ai-prompt')?.addEventListener('keypress',e=>{if(e.key==='Enter')askAI()});
 
 // ── MOBILE NAV ──────────────────────────────────────────────────────────────
-function updateMobileNav(page){
-  document.querySelectorAll('.mobile-nav-btn').forEach(b=>b.classList.remove('active'));
-  const btn=document.getElementById('mbnav-'+page);
-  if(btn) btn.classList.add('active');
-}
-
 function toggleMobileSidebar(){
   const sidebar=document.querySelector('.sidebar');
   const overlay=document.getElementById('sidebar-overlay');
