@@ -2111,7 +2111,7 @@ async function sbRaw(url, opts){
   let r;
   try { r = await Promise.race([
     fetch(url, opts),
-    new Promise((_,rej)=>setTimeout(()=>rej(new Error('NETWORK:Timeout')),8000))
+    new Promise((_,rej)=>setTimeout(()=>rej(new Error('NETWORK:Timeout')),5000))
   ]); }
   catch(e){ throw new Error('NETWORK:'+e.message); }
   if(!r.ok){
@@ -2224,7 +2224,7 @@ function _limparCacheLogin(){ try{localStorage.removeItem(CACHE_KEY);}catch(_){}
 
 // ── Mensagem amigável de erro de rede ───────────────────
 function _msgErroRede(){
-  return '⚠️ Sem conexão com o servidor.\nIsso pode acontecer em redes que bloqueiam o acesso.\n\nSe você já entrou antes neste dispositivo, tente novamente — o app tentará usar os dados salvos.';
+  return '⚠️ Sem conexão com o servidor.\nIsso pode acontecer em redes que bloqueiam o acesso.\n\nSe você já entrou antes neste dispositivo, tente novamente — o app entrará com os dados salvos.';
 }
 
 async function fazerLogin(){
@@ -2239,12 +2239,36 @@ async function fazerLogin(){
   const hash = hashSenha(senha);
   let erroRede = false;
 
-  // Retry helper: tenta 2x com 1s de intervalo em caso de erro de rede
+  // ── ATALHO OFFLINE: se sem internet, tenta cache imediatamente ──
+  if(!navigator.onLine){
+    const cacheOff = _buscarCacheLogin(usuario, hash);
+    if(cacheOff){
+      showToast('⚡ Modo offline — usando dados salvos','');
+      if(cacheOff.perfil==='aluno'){
+        _sessaoAluno=cacheOff.dados;
+        document.getElementById('login-overlay').style.display='none';
+        document.getElementById('login-titlebar').style.display='none';
+        document.getElementById('aluno-view').classList.add('visible');
+        document.getElementById('aluno-header-nome').textContent=(_sessaoAluno.nome||'Aluno').split(' ')[0];
+        document.getElementById('mobile-bottom-nav').style.display='none';
+        await carregarDadosAluno(_sessaoAluno.id);
+      } else {
+        _entrarComoPersonal(cacheOff.dados);
+      }
+      btn.textContent='Entrar'; btn.disabled=false; return;
+    }
+    errEl.style.whiteSpace='pre-line';
+    errEl.textContent='📵 Sem conexão com a internet.\n\nFaça login online pelo menos uma vez para habilitar o acesso offline neste dispositivo.';
+    errEl.style.display='block';
+    btn.textContent='Entrar'; btn.disabled=false; return;
+  }
+
+  // Retry helper: tenta 2x com 0.8s de intervalo em caso de erro de rede
   async function _sbQComRetry(tabela, query){
     try{ return await sbQ(tabela, query); }
     catch(e){
       if(_isNetworkError(e)){
-        await new Promise(r=>setTimeout(r,1000));
+        await new Promise(r=>setTimeout(r,800));
         return await sbQ(tabela, query); // segunda tentativa
       }
       throw e;
@@ -2673,8 +2697,8 @@ function _carregarCacheDados(alunoId){
     const raw=localStorage.getItem(CACHE_DADOS_KEY+'_'+alunoId);
     if(!raw) return null;
     const c=JSON.parse(raw);
-    // Cache válido por 7 dias
-    if((Date.now()-c.ts)<7*24*3600*1000) return c;
+    // Cache válido por 30 dias
+    if((Date.now()-c.ts)<30*24*3600*1000) return c;
   }catch(_){}
   return null;
 }
@@ -7522,6 +7546,32 @@ window.addEventListener('beforeinstallprompt',e=>{
   const titlebar=document.querySelector('.titlebar .db-status');
   if(titlebar) titlebar.parentNode.insertBefore(btn,titlebar);
 });
+
+// ── Indicador de conectividade ──────────────────────────
+function _mostrarBannerOffline(offline){
+  let b=document.getElementById('_conn-banner');
+  if(!b){
+    b=document.createElement('div');
+    b.id='_conn-banner';
+    b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;text-align:center;font-size:12px;font-weight:600;padding:5px 12px;transition:transform .3s;pointer-events:none';
+    document.body.appendChild(b);
+  }
+  if(offline){
+    b.textContent='📵 Sem conexão — modo offline';
+    b.style.background='rgba(255,160,0,.92)';
+    b.style.color='#1a0e00';
+    b.style.transform='translateY(0)';
+  } else {
+    b.textContent='✅ Conexão restaurada';
+    b.style.background='rgba(80,200,80,.92)';
+    b.style.color='#001a00';
+    b.style.transform='translateY(0)';
+    setTimeout(()=>{ if(b) b.style.transform='translateY(-100%)'; },2500);
+  }
+}
+window.addEventListener('offline', ()=>_mostrarBannerOffline(true));
+window.addEventListener('online',  ()=>_mostrarBannerOffline(false));
+if(!navigator.onLine) _mostrarBannerOffline(true);
 </script>
 <!-- MODAL AUTO-NOTIFICAÇÃO -->
 <div class="autonotif-modal" id="modal-autonotif" onclick="if(event.target===this)fecharAutoNotif()">
