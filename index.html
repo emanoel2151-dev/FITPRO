@@ -2123,9 +2123,13 @@ async function sbRaw(url, opts){
   let r;
   try { r = await Promise.race([
     fetch(url, opts),
-    new Promise((_,rej)=>setTimeout(()=>rej(new Error('NETWORK:Timeout')),5000))
+    new Promise((_,rej)=>setTimeout(()=>rej(new Error('NETWORK:Timeout')),12000))
   ]); }
-  catch(e){ throw new Error('NETWORK:'+e.message); }
+  catch(e){
+    // Evita prefixo duplo "NETWORK:NETWORK:..."
+    const msg = e.message.startsWith('NETWORK:') ? e.message : 'NETWORK:'+e.message;
+    throw new Error(msg);
+  }
   if(!r.ok){
     let body={};
     try{ body=await r.json(); }catch(_){}
@@ -2280,7 +2284,7 @@ async function fazerLogin(){
     try{ return await sbQ(tabela, query); }
     catch(e){
       if(_isNetworkError(e)){
-        await new Promise(r=>setTimeout(r,800));
+        await new Promise(r=>setTimeout(r,2000));
         return await sbQ(tabela, query); // segunda tentativa
       }
       throw e;
