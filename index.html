@@ -7262,14 +7262,27 @@ async function abrirStorageModal(inputId, previewId){
   // Carregar lista de buckets disponíveis
   try{
     const r=await fetch(`${SB_URL}/storage/v1/bucket`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const sel=document.getElementById('storage-bucket-sel');
     if(r.ok){
       const buckets=await r.json();
-      const sel=document.getElementById('storage-bucket-sel');
       if(sel&&Array.isArray(buckets)&&buckets.length){
         sel.innerHTML=buckets.map(b=>`<option value="${b.name}">${b.name}</option>`).join('');
       }
+    } else {
+      // Fallback: listar buckets conhecidos manualmente
+      if(sel){
+        sel.innerHTML=['Triceps','Trapezio','Peito','Ombro','Membros Inferiores','Costas','Biceps','Gluteos','Core','exercicios']
+          .map(b=>`<option value="${b}">${b}</option>`).join('');
+      }
     }
-  }catch(_){}
+  }catch(e){
+    // Fallback em caso de erro de rede
+    const sel=document.getElementById('storage-bucket-sel');
+    if(sel){
+      sel.innerHTML=['Triceps','Trapezio','Peito','Ombro','Membros Inferiores','Costas','Biceps','Gluteos','Core','exercicios']
+        .map(b=>`<option value="${b}">${b}</option>`).join('');
+    }
+  }
   carregarStorage();
 }
 
