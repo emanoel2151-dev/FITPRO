@@ -3935,7 +3935,7 @@ const fdt=(d)=>{if(!d)return'—';try{return new Date(d+'T00:00:00').toLocaleDat
 const DIAS=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
 const DIAS_SHORT=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 
-function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+type;setTimeout(()=>t.classList.remove('show'),3000)}
+function showToast(msg,type='success',duration){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+type;const d=duration||(type==='error'?7000:3000);clearTimeout(t._hideTimer);t._hideTimer=setTimeout(()=>t.classList.remove('show'),d)}
 // showPage unificada acima
 function openModal(id){document.getElementById(id).classList.add('open')}
 function closeModal(id){document.getElementById(id).classList.remove('open')}
@@ -7199,15 +7199,27 @@ async function confirmarAplicarTreino(){
   try{
     const _pidApl=_meuPersonalId();
     const payload={aluno_id:alunoId,aluno_nome:alunoNome,titulo:t.nome,data_sessao:data,dia_semana:DIAS[d.getDay()],duracao_min:t.duracao_min||null,descanso_seg:60,obs:`Aplicado da biblioteca: ${t.nome}`,status,...(_pidApl?{personal_id:_pidApl}:{})};
+    console.log('[AplicarTreino] payload sessao →', payload);
     const res=await sbI('sessoes',payload);
-    const sessaoId=Array.isArray(res)?res[0].id:res.id;
+    console.log('[AplicarTreino] resposta do insert →', res);
+    // Se a tabela não retornar a linha criada (ex.: falta policy de SELECT no Supabase),
+    // res vem como [] e não dá pra linkar os exercícios. Avisa explicitamente em vez de
+    // deixar a sessão órfã sem exercícios e um erro genérico.
+    if(!Array.isArray(res)||!res.length||!res[0]?.id){
+      throw new Error('A sessão pode ter sido criada no banco, mas o Supabase não retornou os dados (verifique a política de SELECT da tabela "sessoes" para a chave pública no Supabase). Exercícios NÃO foram vinculados.');
+    }
+    const sessaoId=res[0].id;
     if(exs.length){
-      await sbI('exercicios',exs.map(e=>({nome:e.nome,series:e.series,repeticoes:e.repeticoes,carga:e.carga,descanso_seg:e.descanso_seg,obs:e.obs||null,gif_url:e.gif_url||null,ordem:e.ordem,sessao_id:sessaoId})));
+      const resEx=await sbI('exercicios',exs.map(e=>({nome:e.nome,series:e.series,repeticoes:e.repeticoes,carga:e.carga,descanso_seg:e.descanso_seg,obs:e.obs||null,gif_url:e.gif_url||null,ordem:e.ordem,sessao_id:sessaoId})));
+      console.log('[AplicarTreino] resposta do insert de exercícios →', resEx);
     }
     closeModal('modal-aplicar-treino');
     await loadSessoes();updateDashboard();
     showToast(`Treino "${t.nome}" aplicado para ${alunoNome}! ✅`);
-  }catch(e){showToast('Erro: '+e.message,'error')}
+  }catch(e){
+    console.error('[AplicarTreino] ERRO:', e);
+    showToast('Erro ao aplicar treino: '+e.message,'error');
+  }
   btn.disabled=false;btn.textContent='Confirmar e Salvar';
 }
 
