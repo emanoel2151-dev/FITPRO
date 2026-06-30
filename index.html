@@ -7355,7 +7355,7 @@ async function _fetchBlobUrl(bucket, fullPath){
   // 1. Tentar URL pública
   const pubUrl=`${SB_URL}/storage/v1/object/public/${bucket}/${encodedPath}`;
   try{
-    const r=await fetch(pubUrl);
+    const r=await fetch(pubUrl,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
     if(r.ok){
       const blob=await r.blob();
       const blobUrl=URL.createObjectURL(blob);
